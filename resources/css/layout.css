@@ -1,0 +1,71 @@
+/* Header styles */
+.header {
+    background-color: var(--primary);
+    padding: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    color: white !important;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+    color: rgba(255,255,255,0.9) !important;
+    margin: 0 0.5rem;
+}
+
+.navbar-nav .nav-link:hover {
+    color: white !important;
+}
+
+/* Sidebar styles */
+.sidebar {
+    background-color: var(--sidebar);
+    min-height: 100vh;
+    color: white;
+    padding: 1rem 0;
+}
+
+.sidebar .nav-link {
+    color: rgba(255,255,255,0.8);
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    margin: 0.25rem 0.5rem;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+}
+
+/* Main content */
+.main-content {
+    padding: 2rem 0;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--sidebar);
+    color: white;
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+/* Admin panel specific */
+.admin-layout {
+    display: flex;
+}
+
+.admin-sidebar {
+    width: 250px;
+    flex-shrink: 0;
+}
+
+.admin-content {
+    flex: 1;
+    padding: 2rem;
+    background-color: var(--background);
+}
