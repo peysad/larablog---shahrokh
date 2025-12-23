@@ -29,86 +29,7 @@
 
                 <hr class="my-4">
 
-                <!-- Statistics Cards -->
-                <div class="row g-4">
-                    <div class="col-md-3">
-                        <div class="card text-white h-100" style="background-color: var(--primary);">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1">
-                                        <h6 class="card-title mb-1">My Posts</h6>
-                                        <h2 class="mb-0 fw-bold">{{ $stats['posts_count'] }}</h2>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <i class="bi bi-file-text fs-1 opacity-75"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-transparent border-0">
-                                <a href="#" class="text-white text-decoration-none small">
-                                    View All Posts <i class="bi bi-arrow-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="card text-white h-100" style="background-color: var(--secondary);">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1">
-                                        <h6 class="card-title mb-1">Published</h6>
-                                        <h2 class="mb-0 fw-bold">{{ $stats['published_posts'] }}</h2>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <i class="bi bi-check-circle fs-1 opacity-75"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-transparent border-0">
-                                <span class="text-white-50 small">Live on the blog</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="card text-white h-100" style="background-color: var(--accent); color: var(--text-main) !important;">
-                            <div class="card-body" style="color: var(--text-main);">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1">
-                                        <h6 class="card-title mb-1">Drafts</h6>
-                                        <h2 class="mb-0 fw-bold">{{ $stats['draft_posts'] }}</h2>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <i class="bi bi-pencil-square fs-1 opacity-75"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-transparent border-0">
-                                <span class="small" style="color: var(--text-main);">Work in progress</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="card text-white h-100" style="background-color: var(--sidebar);">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1">
-                                        <h6 class="card-title mb-1">Member Since</h6>
-                                        <h5 class="mb-0 fw-bold">{{ auth()->user()->created_at->diffForHumans() }}</h5>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <i class="bi bi-calendar-check fs-1 opacity-75"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-transparent border-0">
-                                <span class="text-white-50 small">{{ auth()->user()->created_at->format('Y-m-d') }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Statistics Cards Section REMOVED (Will be added back after Post implementation) -->
 
                 <!-- Quick Actions -->
                 <div class="row mt-5">
@@ -117,11 +38,7 @@
                             <i class="bi bi-lightning"></i> Quick Actions
                         </h5>
                         <div class="btn-group flex-wrap gap-2">
-                            @can('create posts')
-                                <a href="#" class="btn btn-primary">
-                                    <i class="bi bi-plus-circle"></i> Write New Post
-                                </a>
-                            @endcan
+                            <!-- Write New Post Button REMOVED -->
                             
                             <a href="#" class="btn btn-outline-secondary">
                                 <i class="bi bi-person"></i> Edit Profile

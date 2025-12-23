@@ -22,7 +22,7 @@
 </head>
 <body style="background-color: var(--background);">
 
-    <!-- Navigation -->
+        <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color: var(--sidebar);">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold" href="{{ route('home') }}">
@@ -36,10 +36,11 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <!-- Search Form -->
-                <form class="d-flex ms-auto me-3" action="#" method="GET" style="width: 300px;">
+                <!-- FIX: Changed action to route('posts.index') and name to 'search' -->
+                <form class="d-flex ms-auto me-3" action="{{ route('posts.index') }}" method="GET" style="width: 300px;">
                     <div class="input-group">
-                        <input type="search" class="form-control form-control-sm" name="q" 
-                               placeholder="Search posts..." aria-label="Search">
+                        <input type="search" class="form-control form-control-sm" name="search" 
+                               placeholder="Search posts..." aria-label="Search" value="{{ request('search') }}">
                         <button class="btn btn-outline-light btn-sm" type="submit">
                             <i class="bi bi-search"></i>
                         </button>
@@ -77,7 +78,7 @@
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle"></i> {{ auth()->user()->name }}
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu">
                                 <li>
                                     <a class="dropdown-item" href="#">
                                         <i class="bi bi-gear"></i> Profile Settings

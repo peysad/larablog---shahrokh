@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ForgotPasswordController extends Controller
 {
@@ -28,6 +30,8 @@ class ForgotPasswordController extends Controller
             'email.exists' => 'We cannot find a user with that email address.',
         ]);
 
+        // For real application
+        /*
         $status = Password::sendResetLink(
             $request->only('email')
         );
@@ -49,5 +53,16 @@ class ForgotPasswordController extends Controller
         return $status === Password::RESET_LINK_SENT
             ? back()->with(['status' => __($status)])
             : back()->withErrors(['email' => __($status)]);
+        */
+
+        // For test application
+        $email = $request->email;
+        $user = User::where('email', $email)->firstOrFail();
+        $token = Password::createToken($user);
+        return redirect()->route('password.reset', [
+            'token' => $token,
+            'email' => $email
+        ])->with('status', 'Development Mode: Password reset link generated automatically.');
+
     }
 }

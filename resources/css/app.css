@@ -21,6 +21,7 @@ body {
     color: var(--text-main);
     font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
+    min-height: 100vh;
 }
 
 a {
@@ -34,15 +35,90 @@ a:hover {
     text-decoration: underline;
 }
 
+/* Main Content Container */
+.main-content {
+    min-height: calc(100vh - 120px); /* Adjust based on navbar height */
+}
+
 /* Card Styles */
 .card {
     background-color: var(--card-bg);
     border-color: var(--border-color);
     transition: all 0.3s ease;
+    height: 100%;
 }
 
 .card:hover {
     box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08) !important;
+}
+
+/* Compact Post Card Styles */
+.card-compact {
+    height: auto;
+    min-height: 200px;
+}
+
+.card-compact .card-img-top {
+    height: 120px !important;
+}
+
+.card-compact .card-text {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.card-compact .card-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-compact .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* Posts Container with Scroll */
+.posts-container {
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.posts-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.posts-container::-webkit-scrollbar-track {
+    background: var(--background);
+}
+
+.posts-container::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+.posts-container::-webkit-scrollbar-thumb:hover {
+    background: var(--text-main);
+}
+
+/* Sidebar Styles */
+.sidebar-container {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .posts-container {
+        max-height: none;
+        overflow-y: visible;
+    }
+    
+    .sidebar-container {
+        position: static;
+        margin-top: 2rem;
+    }
 }
 
 /* Form Controls */
@@ -92,7 +168,7 @@ a:hover {
 .alert-success {
     background-color: rgba(16, 185, 129, 0.1);
     border-left-color: var(--success);
-    color: var(--success);
+    color: --success;
 }
 
 .alert-danger {
@@ -111,24 +187,14 @@ footer {
 .bg-primary-custom { background-color: var(--primary) !important; }
 .border-primary-custom { border-color: var(--primary) !important; }
 
-/* RTL Specific */
-[dir="rtl"] .input-group .input-group-text {
-    border-left: 0;
-    border-right: 1px solid var(--border-color);
-}
-
-[dir="rtl"] .form-control {
-    border-radius: 0 0.375rem 0.375rem 0 !important;
-}
-
-[dir="rtl"] .input-group .form-control {
-    border-radius: 0.375rem 0 0 0.375rem !important;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
     .navbar .input-group {
         width: 100% !important;
         margin-bottom: 1rem;
+    }
+    
+    .main-content {
+        min-height: auto;
     }
 }

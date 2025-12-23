@@ -1,0 +1,179 @@
+@php
+    $isPublished = $post?->status === 'published';
+@endphp
+
+<form method="POST" action="{{ $action }}" enctype="multipart/form-data">
+    @csrf
+    @method($method)
+
+    <!-- Title -->
+    <div class="mb-4">
+        <label for="title" class="form-label fw-bold">
+            Post Title <span class="text-danger">*</span>
+        </label>
+        <input type="text" id="title" name="title" 
+               class="form-control form-control-lg @error('title') is-invalid @enderror" 
+               value="{{ old('title', $post?->title) }}" 
+               placeholder="Enter a compelling title" required>
+        @error('title')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <!-- Slug -->
+    <div class="mb-4">
+        <label for="slug" class="form-label fw-bold">
+            URL Slug <small class="text-muted">(auto-generated if empty)</small>
+        </label>
+        <input type="text" id="slug" name="slug" 
+               class="form-control @error('slug') is-invalid @enderror" 
+               value="{{ old('slug', $post?->slug) }}" 
+               placeholder="my-awesome-post">
+        <div class="form-text">
+            <i class="bi bi-link-45deg"></i> 
+            Will be: {{ config('app.url') }}/posts/<span id="slug-preview">{{ $post?->slug ?? 'your-slug' }}</span>
+        </div>
+        @error('slug')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <!-- Featured Image -->
+    <div class="mb-4">
+        <label for="featured_image" class="form-label fw-bold">
+            Featured Image <small class="text-muted">(Max: 5MB, JPG/PNG/WebP)</small>
+        </label>
+        <input type="file" id="featured_image" name="featured_image" accept="image/*"
+               class="form-control @error('featured_image') is-invalid @enderror">
+        
+        @if($post?->featured_image)
+            <div class="mt-2 p-2 border rounded">
+                <img src="{{ asset('storage/' . str_replace('original', 'thumb', $post->featured_image)) }}" 
+                     alt="Current image" class="img-thumbnail" style="max-height: 150px;">
+                <p class="text-muted small mt-1">Current image. Upload a new one to replace.</p>
+            </div>
+        @endif
+        
+        @error('featured_image')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <!-- Excerpt -->
+    <div class="mb-4">
+        <label for="excerpt" class="form-label fw-bold">
+            Excerpt <small class="text-muted">(Optional summary)</small>
+        </label>
+        <textarea id="excerpt" name="excerpt" rows="3"
+                  class="form-control @error('excerpt') is-invalid @enderror" 
+                  placeholder="Brief summary of your post...">{{ old('excerpt', $post?->excerpt) }}</textarea>
+        <div class="form-text"><span id="excerpt-count">0</span>/500 characters</div>
+        @error('excerpt')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <!-- Body -->
+    <div class="mb-4">
+        <label for="body" class="form-label fw-bold">
+            Post Content <span class="text-danger">*</span>
+        </label>
+        <textarea id="body" name="body" rows="15"
+                  class="form-control @error('body') is-invalid @enderror" 
+                  placeholder="Write your amazing content here...">{{ old('body', $post?->body) }}</textarea>
+        <div class="form-text">
+            <i class="bi bi-info-circle"></i> 
+            Estimated reading time: <span id="reading-time">2</span> min
+        </div>
+        @error('body')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <!-- Categories -->
+    <div class="mb-4">
+        <label class="form-label fw-bold">Categories</label>
+        <div class="row g-2">
+            @forelse($categories as $category)
+                <div class="col-md-4">
+                    <div class="form-check">
+                        <input type="checkbox" name="categories[]" value="{{ $category->id }}" 
+                               class="form-check-input" id="category-{{ $category->id }}"
+                               {{ in_array($category->id, old('categories', $post?->categories->pluck('id')->toArray() ?? [])) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="category-{{ $category->id }}">
+                            {{ $category->name }}
+                        </label>
+                    </div>
+                </div>
+            @empty
+                <p class="text-muted">No categories available.</p>
+            @endforelse
+        </div>
+        @error('categories')
+            <div class="text-danger small mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <!-- Tags -->
+    <div class="mb-4">
+        <label for="tags" class="form-label fw-bold">Tags</label>
+        <div class="row g-2">
+            @forelse($tags as $tag)
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input type="checkbox" name="tags[]" value="{{ $tag->id }}" 
+                               class="form-check-input" id="tag-{{ $tag->id }}"
+                               {{ in_array($tag->id, old('tags', $post?->tags->pluck('id')->toArray() ?? [])) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="tag-{{ $tag->id }}">
+                            #{{ $tag->name }}
+                        </label>
+                    </div>
+                </div>
+            @empty
+                <p class="text-muted">No tags available.</p>
+            @endforelse
+        </div>
+        @error('tags')
+            <div class="text-danger small mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <!-- Status -->
+    <div class="mb-4">
+        <label for="status" class="form-label fw-bold">Status</label>
+        <select id="status" name="status" class="form-select @error('status') is-invalid @enderror">
+            <option value="draft" {{ old('status', $post?->status ?? 'draft') === 'draft' ? 'selected' : '' }}>
+                Draft
+            </option>
+            @can('publish posts')
+                <option value="published" {{ old('status', $post?->status) === 'published' ? 'selected' : '' }}>
+                    Published
+                </option>
+            @endcan
+        </select>
+        @error('status')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+        <div>
+            <a href="{{ route('posts.index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle"></i> Cancel
+            </a>
+        </div>
+        <div class="btn-group">
+            @if($post && !$isPublished)
+                @can('publish posts')
+                    <button type="submit" name="status" value="published" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Publish Now
+                    </button>
+                @endcan
+            @endif
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> {{ $buttonText }}
+            </button>
+        </div>
+    </div>
+</form>

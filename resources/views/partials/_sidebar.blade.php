@@ -1,0 +1,84 @@
+<!-- About Widget -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">
+            <i class="bi bi-info-circle"></i> About LaraBlog
+        </h5>
+    </div>
+    <div class="card-body">
+        <p class="mb-0">
+            A modern blogging platform built with Laravel 12, featuring role-based access, 
+            nested comments, and image management.
+        </p>
+    </div>
+</div>
+
+<!-- Categories Widget -->
+@php
+    $sidebarCategories = \App\Models\Category::withCount('posts')->get();
+@endphp
+
+@if($sidebarCategories->count())
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="bi bi-folder"></i> Categories
+            </h5>
+        </div>
+        <div class="list-group list-group-flush">
+            @foreach($sidebarCategories as $category)
+                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between">
+                    {{ $category->name }}
+                    <span class="badge bg-primary rounded-pill">{{ $category->posts_count }}</span>
+                </a>
+            @endforeach
+        </div>
+    </div>
+@endif
+
+<!-- Tags Widget -->
+@php
+    $sidebarTags = \App\Models\Tag::withCount('posts')->get();
+@endphp
+
+@if($sidebarTags->count())
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="bi bi-tags"></i> Popular Tags
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2">
+                @foreach($sidebarTags as $tag)
+                    <span class="badge bg-light text-dark">
+                        #{{ $tag->name }} ({{ $tag->posts_count }})
+                    </span>
+                @endforeach
+            </div>
+        </div>
+    </div>
+@endif
+
+<!-- Stats Widget -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">
+            <i class="bi bi-graph-up"></i> Blog Stats
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+            <span>Total Posts:</span>
+            <strong>{{ \App\Models\Post::published()->count() }}</strong>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+            <span>Categories:</span>
+            <strong>{{ \App\Models\Category::count() }}</strong>
+        </div>
+        <div class="d-flex justify-content-between">
+            <span>Tags:</span>
+            <strong>{{ \App\Models\Tag::count() }}</strong>
+        </div>
+    </div>
+</div>
