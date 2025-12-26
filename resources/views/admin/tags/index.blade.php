@@ -5,6 +5,7 @@
 <style>
     .card {
         height: 60vh;
+        overflow-y: scroll;
     }
 </style>
 @endpush

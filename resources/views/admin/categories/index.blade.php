@@ -1,7 +1,12 @@
 @extends('layouts.app')
 
 @section('title', 'Manage Categories')
-
+<style>
+    .card {
+        height: 60vh;
+        overflow-y: scroll;
+    }
+</style>
 @section('content')
 <div class="row">
     <div class="col-12">
