@@ -5,8 +5,12 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Post;
+use App\Models\Category;
+use App\Models\Tag;
 use App\Models\Comment;
 use App\Policies\PostPolicy;
+use App\Policies\CategoryPolicy;
+use App\Policies\TagPolicy;
 use App\Policies\CommentPolicy;
 
 class AuthServiceProvider extends ServiceProvider
@@ -17,6 +21,9 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
+        Post::class => PostPolicy::class,
+        Category::class => CategoryPolicy::class, // Add this
+        Tag::class => TagPolicy::class, // Add this
     ];
 
     /**

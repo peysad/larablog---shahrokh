@@ -9,16 +9,15 @@ use App\Http\Controllers\Auth\{
 };
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PostController;
-// use App\Http\Middleware\CheckRole; // Not strictly needed if using 'role' middleware alias
+use App\Http\Controllers\Admin\CategoryAdminController;
+use App\Http\Controllers\Admin\TagAdminController;
 
 // ==== Guest Routes (Unauthenticated) ====
 Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [LoginController::class, 'login']);
-
     Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('register', [RegisterController::class, 'register']);
-
     Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
     Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
@@ -31,6 +30,35 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
+// ==== Public Routes for Filtering (Categories & Tags) ====
+// Category Posts
+Route::get('categories/{category:slug}', function (\App\Models\Category $category) {
+    $posts = $category->posts()
+        ->with(['author', 'categories', 'tags'])
+        ->published()
+        ->latest('published_at')
+        ->paginate(12);
+
+    return view('posts.index', [
+        'posts' => $posts,
+        'filter' => "Category: {$category->name}"
+    ]);
+})->name('categories.show');
+
+// Tag Posts
+Route::get('tags/{tag:slug}', function (\App\Models\Tag $tag) {
+    $posts = $tag->posts()
+        ->with(['author', 'categories', 'tags'])
+        ->published()
+        ->latest('published_at')
+        ->paginate(12);
+
+    return view('posts.index', [
+        'posts' => $posts,
+        'filter' => "Tag: #{$tag->name}"
+    ]);
+})->name('tags.show');
+
 // ==== Admin Panel Routes ====
 Route::middleware(['auth', 'role:Admin|Editor'])
     ->prefix('admin')
@@ -39,6 +67,16 @@ Route::middleware(['auth', 'role:Admin|Editor'])
         Route::get('/', function () {
             return view('admin.dashboard');
         })->name('dashboard');
+
+        // Category Management
+        Route::resource('categories', CategoryAdminController::class)
+            ->except(['show'])
+            ->middleware('can:manage categories');
+
+        // Tag Management
+        Route::resource('tags', TagAdminController::class)
+            ->except(['show'])
+            ->middleware('can:manage tags');
     });
 
 // ==== Author/Editor/Admin Post Management Routes ====

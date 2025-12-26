@@ -7,17 +7,40 @@
     </div>
     <div class="card-body">
         <p class="mb-0">
-            A modern blogging platform built with Laravel 12, featuring role-based access, 
+            A modern blogging platform built with Laravel 12, featuring role-based access,
             nested comments, and image management.
         </p>
     </div>
 </div>
 
+<!-- Admin Quick Access -->
+@can('view-admin-panel')
+    <div class="card shadow-sm border-0 mb-4 border-warning">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">
+                <i class="bi bi-shield-check"></i> Admin Quick Access
+            </h5>
+        </div>
+        <div class="list-group list-group-flush">
+            <a href="{{ route('admin.dashboard') }}" class="list-group-item list-group-item-action">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a href="{{ route('admin.categories.index') }}" class="list-group-item list-group-item-action">
+                <i class="bi bi-folder"></i> Manage Categories
+                <span class="badge bg-primary rounded-pill float-start">{{ \App\Models\Category::count() }}</span>
+            </a>
+            <a href="{{ route('admin.tags.index') }}" class="list-group-item list-group-item-action">
+                <i class="bi bi-tags"></i> Manage Tags
+                <span class="badge bg-primary rounded-pill float-start">{{ \App\Models\Tag::count() }}</span>
+            </a>
+        </div>
+    </div>
+@endcan
+
 <!-- Categories Widget -->
 @php
     $sidebarCategories = \App\Models\Category::withCount('posts')->get();
 @endphp
-
 @if($sidebarCategories->count())
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-white">
@@ -27,7 +50,7 @@
         </div>
         <div class="list-group list-group-flush">
             @foreach($sidebarCategories as $category)
-                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between">
+                <a href="{{ route('categories.show', $category->slug) }}" class="list-group-item list-group-item-action d-flex justify-content-between">
                     {{ $category->name }}
                     <span class="badge bg-primary rounded-pill">{{ $category->posts_count }}</span>
                 </a>
@@ -40,7 +63,6 @@
 @php
     $sidebarTags = \App\Models\Tag::withCount('posts')->get();
 @endphp
-
 @if($sidebarTags->count())
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-white">
@@ -51,9 +73,9 @@
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2">
                 @foreach($sidebarTags as $tag)
-                    <span class="badge bg-light text-dark">
+                    <a href="{{ route('tags.show', $tag->slug) }}" class="badge bg-light text-dark text-decoration-none">
                         #{{ $tag->name }} ({{ $tag->posts_count }})
-                    </span>
+                    </a>
                 @endforeach
             </div>
         </div>

@@ -79,7 +79,7 @@ a:hover {
 
 /* Posts Container with Scroll */
 .posts-container {
-    max-height: calc(100vh - 150px);
+    max-height: calc(200vh - 150px);
     overflow-y: auto;
     padding-right: 10px;
 }

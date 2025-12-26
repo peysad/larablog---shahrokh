@@ -53,3 +53,44 @@ document.getElementById('featured_image')?.addEventListener('change', function(e
         reader.readAsDataURL(file);
     }
 });
+
+// Auto-generate slug for categories/tags
+document.querySelectorAll('#name').forEach(input => {
+    input.addEventListener('input', function(e) {
+        const slugField = document.getElementById('slug');
+        if (slugField && !slugField.dataset.manuallyEdited) {
+            const slug = e.target.value
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .trim();
+            slugField.value = slug;
+            const preview = document.getElementById('slug-preview');
+            if (preview) preview.textContent = slug;
+        }
+    });
+});
+
+// Character counter for description
+document.getElementById('description')?.addEventListener('input', function(e) {
+    const count = e.target.value.length;
+    const counter = document.getElementById('desc-count');
+    if (counter) counter.textContent = count;
+    
+    if (count > 1000) {
+        e.target.classList.add('is-invalid');
+    } else {
+        e.target.classList.remove('is-invalid');
+    }
+});
+
+// Prevent deletion if has posts (client-side hint)
+document.querySelectorAll('form[action*="destroy"]').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        const hasPosts = this.dataset.postsCount > 0;
+        if (hasPosts) {
+            e.preventDefault();
+            alert('This item has associated posts and cannot be deleted.');
+        }
+    });
+});
