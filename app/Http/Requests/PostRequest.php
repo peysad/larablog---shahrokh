@@ -68,10 +68,15 @@ class PostRequest extends FormRequest
             ],
             'featured_image' => [
                 'nullable',
+                'file',
                 'image',
-                'mimes:jpeg,png,jpg,gif,webp',
-                'max:5120',
-                'dimensions:min_width=400,min_height=300',
+                'mimes:' . implode(',', $this->getAllowedMimeTypes()),
+                'max:' . config('image.max_upload_size', 5120),
+                //'dimensions:min_width=400,min_height=300,max_width=8000,max_height=8000',
+            ],
+            'delete_image' => [
+                'nullable',
+                'boolean',
             ],
             'categories' => [
                 'nullable',
@@ -111,6 +116,7 @@ class PostRequest extends FormRequest
             'status' => 'publication status',
             'published_at' => 'publish date',
             'featured_image' => 'featured image',
+            'delete_image' => 'delete image option',
             'categories' => 'categories',
             'categories.*' => 'category',
             'tags' => 'tags',
@@ -129,6 +135,8 @@ class PostRequest extends FormRequest
         return [
             'slug.regex' => 'The slug may only contain lowercase letters, numbers, and hyphens.',
             'published_at.after_or_equal' => 'The publish date must be today or in the future.',
+            'featured_image.dimensions' => 'Image dimensions must be between 400x300 and 8000x8000 pixels.',
+            'featured_image.max' => 'Image size must not exceed :max kilobytes.',
         ];
     }
 
@@ -159,7 +167,6 @@ class PostRequest extends FormRequest
     {
         $validated = $this->validated();
 
-        // Remove image from array as it's handled in controller
         unset($validated['featured_image']);
 
         $post = $this->route('post'); // Get the post object if updating
@@ -187,5 +194,16 @@ class PostRequest extends FormRequest
         }
 
         return $validated;
+    }
+
+    /**
+     * Get allowed MIME types.
+     */
+    protected function getAllowedMimeTypes(): array
+    {
+        $mimes = config('image.allowed_mimes', ['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+        return array_map(function ($mime) {
+            return str_replace('image/', '', $mime);
+        }, $mimes);
     }
 }

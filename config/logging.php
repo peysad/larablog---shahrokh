@@ -127,6 +127,14 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'image_processing' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/image-processing.log'),
+            'level' => 'debug',
+            'days' => 14,
+            'tap' => [App\Logging\ImageProcessorFormatter::class],
+        ],
+
     ],
 
 ];

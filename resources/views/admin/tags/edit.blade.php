@@ -1,7 +1,14 @@
 @extends('layouts.app')
 
 @section('title', 'Edit Tag: ' . $tag->name)
+@push('styles')
+<style>
+    .card-body {
+        height: 70vh;
+    }
 
+</style>
+@endpush
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">

@@ -8,6 +8,7 @@ use App\Models\{
     Category,
     Tag
 };
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth, DB, Gate, Log};
 use Illuminate\Auth\Access\AuthorizationException;
@@ -19,14 +20,18 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $user = Auth::user();
-        $query = Post::query()->with(['author', 'categories', 'tags']);
+         $user = Auth::user();
+        
+        $query = Post::query()
+            ->with(['author', 'categories', 'tags'])
+            ->withCount(['comments' => function ($query) {
+                $query->approved();
+            }]);
 
-        // 1. Apply Search (Works independently of role)
+        // 1. Apply Search
         if ($request->filled('search')) {
             $query->search($request->search);
         }
-
         // 2. Apply Filters (Category/Tag)
         if ($request->filled('category')) {
             $query->inCategory($request->category);
@@ -37,21 +42,16 @@ class PostController extends Controller
 
         // 3. Apply Visibility Logic based on Role
         if ($user && $user->hasRole(['Admin', 'Editor'])) {
-            // Admins and Editors see ALL posts (Drafts, Published, Scheduled)
-            // No additional constraints needed here.
+            // Admins and Editors see ALL posts
         } elseif ($user && $user->hasRole('Author')) {
-            // Authors see their OWN published posts.
-            // We intentionally DO NOT use the strict published() scope here because
-            // it filters out future-dated (scheduled) posts.
-            // Authors need to see their scheduled posts to verify them.
+            // Authors see their OWN published posts
             $query->where('user_id', $user->id)
                   ->where('status', 'published');
         } else {
-            // Guests see only strictly published posts (status=published AND date <= now)
+            // Guests see only strictly published posts
             $query->published();
         }
-
-        $posts = $query->latest('published_at')
+         $posts = $query->latest('published_at')
                        ->paginate(12)
                        ->withQueryString();
 
@@ -106,25 +106,36 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PostRequest $request)
+    public function store(PostRequest $request, ImageService $imageService)
     {
         $data = $request->getPostData();
 
-        $post = DB::transaction(function () use ($data, $request) {
+        $post = DB::transaction(function () use ($data, $request, $imageService) {
             $post = Post::create($data);
 
-            // Sync categories and tags (use sync for consistency)
+            // Sync categories and tags
             $post->categories()->sync($request->categories ?? []);
             $post->tags()->sync($request->tags ?? []);
+
+            // Handle featured image upload
+            if ($request->hasFile('featured_image')) {
+                $imagePath = $imageService->storeImage(
+                    $request->file('featured_image'),
+                    'posts',
+                    config('image.sizes', [])
+                );
+                $post->update(['featured_image' => $imagePath]);
+            }
 
             Log::info('Post created successfully', [
                 'post_id' => $post->id,
                 'author_id' => $post->user_id,
                 'title' => $post->title,
-                'status' => $post->status
+                'status' => $post->status,
+                'has_image' => !is_null($post->featured_image),
             ]);
 
-            return $post; // Return from transaction
+            return $post;
         });
 
         $message = $post->status === 'published' 
@@ -151,25 +162,46 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(PostRequest $request, Post $post)
+    public function update(PostRequest $request, Post $post, ImageService $imageService)
     {
         Gate::authorize('update', $post);
 
         $data = $request->getPostData();
 
-        DB::transaction(function () use ($data, $request, $post) {
-            
+        DB::transaction(function () use ($data, $request, $post, $imageService) {
             $post->update($data);
 
             // Sync categories and tags
             $post->categories()->sync($request->categories ?? []);
             $post->tags()->sync($request->tags ?? []);
 
+            // Handle image deletion
+            if ($request->boolean('delete_image') && $post->featured_image) {
+                $imageService->deleteImage($post->featured_image);
+                $post->update(['featured_image' => null]);
+            }
+
+            // Handle featured image replacement
+            if ($request->hasFile('featured_image')) {
+                // Delete old image first
+                if ($post->featured_image) {
+                    $imageService->deleteImage($post->featured_image);
+                }
+
+                $imagePath = $imageService->storeImage(
+                    $request->file('featured_image'),
+                    'posts',
+                    config('image.sizes', [])
+                );
+                $post->update(['featured_image' => $imagePath]);
+            }
+
             Log::info('Post updated successfully', [
                 'post_id' => $post->id,
                 'author_id' => $post->user_id,
                 'title' => $post->title,
-                'status' => $post->status
+                'status' => $post->status,
+                'image_updated' => $request->hasFile('featured_image') || $request->boolean('delete_image'),
             ]);
         });
 
@@ -180,17 +212,27 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post)
+    public function destroy(Post $post, ImageService $imageService)
     {
         Gate::authorize('delete', $post);
 
-        DB::transaction(function () use ($post) {
-            // Soft delete the post (relationships will be handled by database constraints)
+        DB::transaction(function () use ($post, $imageService) {
+            // Detach relationships
+            $post->categories()->detach();
+            $post->tags()->detach();
+            
+            // Delete featured image if exists
+            if ($post->featured_image) {
+                $imageService->deleteImage($post->featured_image);
+            }
+
+            // Soft delete the post
             $post->delete();
 
             Log::info('Post deleted (soft delete)', [
                 'post_id' => $post->id,
                 'title' => $post->title,
+                'image_deleted' => !is_null($post->featured_image),
             ]);
         });
 
@@ -243,6 +285,4 @@ class PostController extends Controller
 
         return redirect()->back()->with('success', $message);
     }
-
-    // deletePostImages method removed as discussed
 }

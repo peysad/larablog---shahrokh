@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\{
     MorphMany
 }; 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
@@ -253,5 +254,42 @@ class Post extends Model
             'status' => 'draft',
             'published_at' => null,
         ]);
+    }
+
+    /**
+     * Accessor for handling image paths smartly
+     */
+    public function getImageUrlAttribute(): string
+    {
+        return $this->getImage('original');
+    }
+
+    /**
+     * Get the URL for a specific image size.
+     * Valid sizes: 'original', 'card', 'social', 'thumbnail' (defined in config/image.php)
+     */
+    public function getImage(string $size = 'original'): string
+    {
+        // 1. Check if post has no featured image
+        if (!$this->featured_image) {
+            return 'https://picsum.photos/seed/' . $this->id . '/800/600.jpg'; // Placeholder image
+        }
+
+        // 2. If original size requested
+        if ($size === 'original') {
+            return asset('storage/' . $this->featured_image);
+        }
+
+        // 3. Generate expected path for the specific size
+        // Example: posts/original/file.jpg -> posts/card/file.jpg
+        $path = str_replace('original', $size, $this->featured_image);
+
+        // 4. Check if that specific sized file actually exists on disk
+        if (Storage::disk('public')->exists($path)) {
+            return asset('storage/' . $path);
+        }
+
+        // 5. Fallback: If specific size doesn't exist (old image), return original
+        return asset('storage/' . $this->featured_image);
     }
 }

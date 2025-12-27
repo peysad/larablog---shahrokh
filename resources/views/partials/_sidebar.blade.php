@@ -8,7 +8,7 @@
     <div class="card-body">
         <p class="mb-0">
             A modern blogging platform built with Laravel 12, featuring role-based access,
-            nested comments, and image management.
+            flat thread comments, and image management.
         </p>
     </div>
 </div>

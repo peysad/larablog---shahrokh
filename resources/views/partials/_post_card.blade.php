@@ -1,12 +1,11 @@
 @props(['post', 'compact' => false])
 
 <div class="card shadow-sm border-0 mb-4 {{ $compact ? 'card-compact' : 'h-100' }}">
-    @if($post->featured_image && !$compact)
-        <img src="{{ asset('storage/' . str_replace('original', 'thumb', $post->featured_image)) }}" 
-             alt="{{ $post->title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
-    @elseif($post->featured_image && $compact)
-        <img src="{{ asset('storage/' . str_replace('original', 'thumb', $post->featured_image)) }}" 
-             alt="{{ $post->title }}" class="card-img-top" style="height: 120px; object-fit: cover;">
+    @if($post->featured_image)
+        <img src="{{ $post->getImage('card') }}" 
+             alt="{{ $post->title }}" 
+             class="card-img-top" 
+             style="height: {{ $compact ? '120px' : '200px' }}; object-fit: cover;">
     @endif
 
     <div class="card-body d-flex flex-column">
@@ -64,10 +63,11 @@
             <div class="text-muted small">
                 <i class="bi bi-eye"></i> {{ number_format($post->views) }}
                 <span class="ms-2">
-                    <i class="bi bi-chat-dots"></i> 0
+                    <i class="bi bi-chat-dots"></i> 
+                    {{ $post->comments_count ?? 0 }}
                 </span>
             </div>
-             <!-- Accesess -->
+             <!-- Accesses -->
                 @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isEditor()))
                     <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline">
                         @csrf

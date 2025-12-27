@@ -38,25 +38,58 @@
         @enderror
     </div>
 
-    <!-- Featured Image -->
+    <!-- Featured Image Section -->
     <div class="mb-4">
-        <label for="featured_image" class="form-label fw-bold">
-            Featured Image <small class="text-muted">(Max: 5MB, JPG/PNG/WebP)</small>
-        </label>
-        <input type="file" id="featured_image" name="featured_image" accept="image/*"
-               class="form-control @error('featured_image') is-invalid @enderror">
+        <label class="form-label fw-bold">Featured Image</label>
         
+        <!-- Current Image Preview -->
         @if($post?->featured_image)
-            <div class="mt-2 p-2 border rounded">
-                <img src="{{ asset('storage/' . str_replace('original', 'thumb', $post->featured_image)) }}" 
-                     alt="Current image" class="img-thumbnail" style="max-height: 150px;">
-                <p class="text-muted small mt-1">Current image. Upload a new one to replace.</p>
+            <div class="current-image-preview mb-3 p-3 border rounded">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <img src="{{ asset('storage/' . str_replace('original', 'thumb', $post->featured_image)) }}" 
+                             alt="Current featured image" 
+                             class="img-fluid rounded" id="current-image">
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-1">
+                            <strong>Current Image:</strong> {{ basename($post->featured_image) }}
+                        </p>
+                        <p class="text-muted small mb-2">
+                            Size: {{ Storage::size('public/' . $post->featured_image) }} bytes
+                        </p>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="delete_image" name="delete_image" 
+                                   value="1" {{ old('delete_image') ? 'checked' : '' }}>
+                            <label class="form-check-label text-danger" for="delete_image">
+                                <i class="bi bi-trash"></i> Delete this image
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
         @endif
+
+        <!-- New Image Upload -->
+        <input type="file" id="featured_image" name="featured_image" accept="image/*"
+               class="form-control @error('featured_image') is-invalid @enderror"
+               onchange="previewImage(event, 'image-preview-new')">
         
         @error('featured_image')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
+        
+        <!-- New Image Preview -->
+        <div class="mt-3">
+            <img id="image-preview-new" style="display: none; max-height: 200px;" 
+                 class="img-fluid rounded border">
+        </div>
+
+        <div class="form-text mt-2">
+            <i class="bi bi-info-circle"></i> 
+            Recommended: 1920x1080px or larger. Max file size: 5MB. 
+            Supported: JPG, PNG, GIF, WebP.
+        </div>
     </div>
 
     <!-- Excerpt -->

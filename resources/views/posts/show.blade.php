@@ -13,6 +13,15 @@
         margin-bottom: 1.5rem;
     }
     
+    .post-hero-image {
+        width: 100%;
+        height: auto;
+        max-height: 500px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
     .post-meta {
         display: flex;
         align-items: center;
@@ -309,6 +318,14 @@
                         </a>
                     </div>
                 @endif
+
+                 <!-- Hero Image Display -->
+                @if($post->featured_image)
+                    <img src="{{ $post->getImage('social') }}" 
+                         alt="{{ $post->title }}" 
+                         class="post-hero-image">
+                @endif
+
                 <!-- Post Meta -->
                 <div class="post-meta">
                     <div class="post-meta-item">
