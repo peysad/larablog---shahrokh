@@ -89,6 +89,10 @@ class PostRequest extends FormRequest
             'tags.*' => [
                 'exists:tags,id',
             ],
+             'allow_comments' => [
+                'nullable',
+                'boolean',
+            ],
         ];
     }
 
@@ -111,6 +115,7 @@ class PostRequest extends FormRequest
             'categories.*' => 'category',
             'tags' => 'tags',
             'tags.*' => 'tag',
+            'allow_comments' => 'comment settings',
         ];
     }
 
@@ -160,6 +165,11 @@ class PostRequest extends FormRequest
         $post = $this->route('post'); // Get the post object if updating
         $currentUserId = $this->user()->id;
 
+        // Handle Checkbox Logic for allow_comments
+        // HTML Checkboxes only send data when CHECKED.
+        // If unchecked, we must manually set it to false for the database.
+
+        $validated['allow_comments'] = $this->has('allow_comments');
         if ($post) {
             // --- UPDATE SCENARIO ---
             

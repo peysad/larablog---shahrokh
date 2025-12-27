@@ -31,10 +31,23 @@
             </a>
             <a href="{{ route('admin.tags.index') }}" class="list-group-item list-group-item-action">
                 <i class="bi bi-tags"></i> Manage Tags
-                <span class="badge bg-primary rounded-pill float-start">{{ \App\Models\Tag::count() }}</span>
+                <span class="badge bg-secondary rounded-pill float-start">{{ \App\Models\Tag::count() }}</span>
             </a>
         </div>
     </div>
+@endcan
+
+<!-- Pending Comments Alert -->
+@can('approve', \App\Models\Comment::class)
+    @php $pendingComments = \App\Models\Comment::where('approved', false)->count(); @endphp
+    @if($pendingComments > 0)
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            <a href="{{ route('admin.comments.pending') }}" class="text-decoration-none">
+                {{ $pendingComments }} comments pending approval
+            </a>
+        </div>
+    @endif
 @endcan
 
 <!-- Categories Widget -->

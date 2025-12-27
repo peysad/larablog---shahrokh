@@ -156,6 +156,22 @@
         @enderror
     </div>
 
+    <!-- Allow Comments Settings -->
+    <div class="mb-4 p-3 bg-light rounded-border">
+        <label class="form-label fw-bold d-block mb-2">
+            <i class="bi bi-chat-square-text"></i> Discussion Settings
+        </label>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" name="allow_comments" id="allow_comments" value="1"
+                   @if(old('allow_comments', $post?->allow_comments ?? true)) checked @endif>
+            <label class="form-check-label" for="allow_comments">
+                Allow users to comment on this post
+            </label>
+        </div>
+        <div class="form-text text-muted">
+            Uncheck this to disable the comment form on the post page.
+        </div>
+    </div>
     <!-- Action Buttons -->
     <div class="d-flex justify-content-between align-items-center pt-4 border-top">
         <div>

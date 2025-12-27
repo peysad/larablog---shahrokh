@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Comment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\{
     BelongsTo,
-    BelongsToMany
+    BelongsToMany,
+    MorphMany
 }; 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
@@ -33,6 +35,7 @@ class Post extends Model
         'published_at',
         'featured_image',
         'views',
+        'allow_comments',
     ];
 
     /**
@@ -44,6 +47,7 @@ class Post extends Model
         'status' => 'string',
         'published_at' => 'datetime',
         'views' => 'integer',
+        'allow_comments' => 'boolean', 
     ];
 
     /**
@@ -115,6 +119,15 @@ class Post extends Model
     {
         return $this->belongsToMany(Tag::class)
                     ->withTimestamps();
+    }
+
+    /**
+     * Get all of the post's comments.
+     * THIS WAS MISSING
+     */
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
     /**

@@ -78,7 +78,16 @@ class PostController extends Controller
             'tags'
         ]);
 
-        return view('posts.show', compact('post'));
+        // Load comments as per Phase 3 requirements
+        // We fetch top-level comments, with their author and nested replies
+        $comments = $post->comments()
+            ->with(['author', 'replies']) 
+            ->whereNull('parent_id') // Only top level comments
+            ->approved()             // Only approved comments
+            ->latest()
+            ->get();
+
+        return view('posts.show', compact('post', 'comments'));
     }
 
     /**

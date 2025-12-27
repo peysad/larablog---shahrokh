@@ -255,6 +255,18 @@
     .read-more-btn:hover {
         background-color: #e8291c;
     }
+
+    /* Comment Section Styles */
+    .comment-item {
+        transition: all 0.3s ease;
+    }
+    .comment-item:hover {
+        transform: translateY(-2px);
+    }
+    .replies {
+        border-left: 3px solid var(--primary);
+        padding-left: 1rem;
+    }
     
     @media (max-width: 768px) {
         .post-header {
@@ -368,16 +380,44 @@
             </div>
             
             <!-- Comments Section -->
-            <div class="comments-section">
-                <div class="comments-header">
-                    <i class="bi bi-chat-dots"></i>
-                    <span>Comments (0)</span>
+            <div id="comments-section" class="comments-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold">
+                        <i class="bi bi-chat-dots"></i> 
+                        Comments ({{ $post->comments()->approved()->count() }})
+                        @can('approve', \App\Models\Comment::class)
+                            @php $pending = $post->comments()->where('approved', false)->count(); @endphp
+                            @if($pending > 0)
+                                <span class="badge bg-warning text-dark ms-2">
+                                    {{ $pending }} pending
+                                </span>
+                            @endif
+                        @endcan
+                    </h4>
                 </div>
-                <div class="comments-placeholder">
-                    <i class="bi bi-info-circle"></i> Comments feature coming in Stage 3!
-                </div>
+
+                <!-- Comment Form -->
+                @if($post->allow_comments ?? true)
+                    @include('partials._comment_form', ['post' => $post])
+                @else
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Comments are closed for this post.
+                    </div>
+                @endif
+
+                <!-- Comments List -->
+
+                @if($comments->count())
+                    @include('partials._comments', ['comments' => $comments, 'depth' => 0, 'maxDepth' => 3])
+                @else
+                    <div class="text-center py-5">
+                        <i class="bi bi-chat-heart display-1 text-muted"></i>
+                        <h5 class="mt-3">No comments yet</h5>
+                        <p class="text-muted">Be the first to share your thoughts!</p>
+                    </div>
+                @endif
             </div>
-            
+
             <!-- Related Posts -->
             @if($post->categories->count())
                 @php
@@ -435,3 +475,43 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+// Toggle reply form visibility
+function toggleReplyForm(commentId) {
+    const form = document.getElementById(`reply-form-${commentId}`);
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    
+    // Focus the textarea
+    if (form.style.display === 'block') {
+        form.querySelector('textarea').focus();
+    }
+}
+
+// Character count for comment form
+document.getElementById('body')?.addEventListener('input', function(e) {
+    const count = e.target.value.length;
+    const counter = document.getElementById('comment-char-count');
+    if (counter) counter.textContent = count;
+    
+    if (count > 1000) {
+        e.target.classList.add('is-invalid');
+    } else {
+        e.target.classList.remove('is-invalid');
+    }
+});
+
+// Scroll to comment from URL hash
+window.addEventListener('DOMContentLoaded', function() {
+    const hash = window.location.hash;
+    if (hash.startsWith('#comment-')) {
+        const element = document.querySelector(hash);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.classList.add('border', 'border-primary');
+        }
+    }
+});
+</script>
+@endpush

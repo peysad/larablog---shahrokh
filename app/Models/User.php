@@ -89,4 +89,12 @@ class User extends Authenticatable
     {
         return $this->hasRole('Author');
     }
+
+    /**
+    * Get unread notifications count.
+    */
+    public function unreadNotificationsCount(): int
+    {
+        return $this->unreadNotifications()->count();
+    }
 }

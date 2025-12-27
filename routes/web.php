@@ -11,6 +11,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\Admin\CategoryAdminController;
 use App\Http\Controllers\Admin\TagAdminController;
+use App\Http\Controllers\Admin\CommentAdminController;
+use App\Http\Controllers\CommentController;
 
 // ==== Guest Routes (Unauthenticated) ====
 Route::middleware('guest')->group(function () {
@@ -76,7 +78,12 @@ Route::middleware(['auth', 'role:Admin|Editor'])
         // Tag Management
         Route::resource('tags', TagAdminController::class)
             ->except(['show'])
-            ->middleware('can:manage tags');
+            ->middleware('can:manage tags');        
+        Route::get('comments', [CommentAdminController::class, 'index'])->name('comments.index');        
+        Route::get('comments/pending', [CommentAdminController::class, 'pending'])->name('comments.pending');
+        Route::post('comments/{comment}/approve', [CommentAdminController::class, 'approve'])->name('comments.approve');
+        Route::post('comments/{comment}/reject', [CommentAdminController::class, 'reject'])->name('comments.reject');
+        Route::delete('comments/{comment}', [CommentAdminController::class, 'destroy'])->name('comments.destroy');
     });
 
 // ==== Author/Editor/Admin Post Management Routes ====
@@ -102,6 +109,9 @@ Route::middleware(['auth', 'role:Admin|Editor|Author'])
 
 // ==== Post Resource Routes (Public) ====
 Route::resource('posts', PostController::class)->only(['index', 'show']);
+
+Route::post('comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
+Route::resource('posts.comments', CommentController::class)->only(['store']);
 
 // ==== Public Routes ====
 Route::get('/', function () {
