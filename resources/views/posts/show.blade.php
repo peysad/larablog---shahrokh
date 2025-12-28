@@ -2,315 +2,13 @@
 
 @section('title', $post->title)
 
-@push('styles')
-<style>
-    /* Post Page Specific Styles */
-    .post-header {
-        padding: 2rem;
-        background-color: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .post-hero-image {
-        width: 100%;
-        height: auto;
-        max-height: 500px;
-        object-fit: cover;
-        border-radius: 0.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-    .post-meta {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        margin-bottom: 1rem;
-        font-size: 0.875rem;
-        color: #6b7280;
-    }
-    
-    .post-meta-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .post-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        line-height: 1.2;
-        color: #1f2937;
-    }
-    
-    .post-excerpt {
-        border-left: 4px solid var(--primary);
-        padding: 0.75rem 1rem;
-        margin: 1rem 0;
-        background-color: rgba(var(--primary-rgb), 0.05);
-        font-style: italic;
-    }
-    
-    .post-categories {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-    }
-    
-    .category-badge {
-        background-color: #e5e7eb;
-        color: #374151;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    
-    .post-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .tag-badge {
-        background-color: #f3f4f6;
-        color: #4b5563;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-    }
-    
-    .post-content {
-        font-size: 1rem;
-        line-height: 1.6;
-        color: #374151;
-        margin-bottom: 2rem;
-    }
-    
-    .post-content img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 0.5rem;
-        margin: 1.5rem 0;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    
-    .post-content pre {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        overflow-x: auto;
-        border: 1px solid var(--border-color);
-        margin: 1.5rem 0;
-    }
-    
-    .post-content code {
-        background-color: #f8f9fa;
-        padding: 0.2rem 0.4rem;
-        border-radius: 0.25rem;
-        font-size: 0.875em;
-        border: 1px solid var(--border-color);
-    }
-    
-    .social-share {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--border-color);
-        margin-top: 1.5rem;
-    }
-    
-    .social-share-label {
-        font-size: 0.875rem;
-        color: #6b7280;
-    }
-    
-    .social-share-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--border-color);
-        border-radius: 0.375rem;
-        background-color: white;
-        color: #374151;
-        font-size: 0.875rem;
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-    
-    .social-share-btn:hover {
-        background-color: var(--primary);
-        color: white;
-        border-color: var(--primary);
-    }
-    
-    .comments-section {
-        background-color: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .comments-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: #1f2937;
-    }
-    
-    .comments-placeholder {
-        background-color: #d1fae5;
-        border-left: 4px solid #10b981;
-        padding: 1rem;
-        border-radius: 0.375rem;
-        margin: 1rem 0;
-        font-size: 0.875rem;
-        color: #065f46;
-    }
-    
-    .related-posts {
-        background-color: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-    }
-    
-    .related-posts-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: #1f2937;
-    }
-    
-    .related-post-card {
-        background-color: white;
-        border: 1px solid var(--border-color);
-        border-radius: 0.5rem;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-    }
-    
-    .related-post-info {
-        flex: 1;
-        margin-right: 1rem;
-    }
-    
-    .related-post-author {
-        font-size: 0.875rem;
-        color: #6b7280;
-        margin-bottom: 0.5rem;
-    }
-    
-    .related-post-title {
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        color: #1f2937;
-    }
-    
-    .related-post-excerpt {
-        font-size: 0.875rem;
-        color: #4b5563;
-        margin-bottom: 0.5rem;
-        line-height: 1.4;
-    }
-    
-    .related-post-meta {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        font-size: 0.75rem;
-        color: #6b7280;
-    }
-    
-    .related-post-stats {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .read-more-btn {
-        background-color: var(--primary);
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-        text-decoration: none;
-        transition: background-color 0.2s ease;
-    }
-    
-    .read-more-btn:hover {
-        background-color: #e8291c;
-    }
-
-    /* Comment Section Styles */
-    .comment-item {
-        transition: all 0.3s ease;
-    }
-    .comment-item:hover {
-        transform: translateY(-2px);
-    }
-    .replies {
-        border-left: 3px solid var(--primary);
-        padding-left: 1rem;
-    }
-    
-    @media (max-width: 768px) {
-        .post-header {
-            padding: 1rem;
-        }
-        
-        .post-title {
-            font-size: 2rem;
-        }
-        
-        .post-meta {
-            flex-direction: column;
-            gap: 0.5rem;
-            align-items: flex-start;
-        }
-        
-        .related-post-card {
-            flex-direction: column;
-        }
-        
-        .related-post-info {
-            margin-right: 0;
-            margin-bottom: 1rem;
-        }
-    }
-</style>
-@endpush
-
 @section('content')
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-8">
             <!-- Main Post Content -->
             <div class="post-header">
-                 <!-- Accesess -->
+                 <!-- Access Controls -->
                 @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isEditor()))
                     <div class="d-flex justify-content-end mb-2">
                         <a href="{{ route('posts.edit', $post) }}" class="btn btn-warning btn-sm text-white">
@@ -431,7 +129,6 @@
                 @endif
 
                 <!-- Comments List -->
-
                 @if($comments->count())
                     @include('partials._comments', ['comments' => $comments, 'depth' => 0, 'maxDepth' => 3])
                 @else
@@ -491,52 +188,106 @@
             @endif
         </div>
         
-        <!-- Sidebar -->
+        <!-- Sidebar Column -->
         <div class="col-lg-4">
-            <div class="sidebar-container">
+            <!-- FIXED: Changed class to 'sidebar-wrapper' to match post.css styles -->
+            <div class="sidebar-wrapper" id="sidebarWrapper">
                 @include('partials._sidebar')
             </div>
         </div>
     </div>
+
+    <!-- Sidebar Toggle Button (for mobile) -->
+    <button class="sidebar-toggle-button collapsed" id="sidebarToggle" aria-label="Toggle Sidebar">
+        <i class="bi bi-chevron-right"></i>
+    </button>
 </div>
 @endsection
 
 @push('scripts')
 <script>
-// Toggle reply form visibility
-function toggleReplyForm(commentId) {
-    const form = document.getElementById(`reply-form-${commentId}`);
-    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+document.addEventListener('DOMContentLoaded', function() {
+    // --- 1. Sidebar Toggle Functionality ---
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebarWrapper');
     
-    // Focus the textarea
-    if (form.style.display === 'block') {
-        form.querySelector('textarea').focus();
-    }
-}
-
-// Character count for comment form
-document.getElementById('body')?.addEventListener('input', function(e) {
-    const count = e.target.value.length;
-    const counter = document.getElementById('comment-char-count');
-    if (counter) counter.textContent = count;
-    
-    if (count > 1000) {
-        e.target.classList.add('is-invalid');
-    } else {
-        e.target.classList.remove('is-invalid');
-    }
-});
-
-// Scroll to comment from URL hash
-window.addEventListener('DOMContentLoaded', function() {
-    const hash = window.location.hash;
-    if (hash.startsWith('#comment-')) {
-        const element = document.querySelector(hash);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            element.classList.add('border', 'border-primary');
+    function toggleSidebarState() {
+        if (window.innerWidth <= 992) {
+            sidebar.classList.toggle('show');
+            sidebarToggle.classList.toggle('collapsed');
+            
+            const icon = sidebarToggle.querySelector('i');
+            if (sidebar.classList.contains('show')) {
+                icon.classList.remove('bi-chevron-right');
+                icon.classList.add('bi-chevron-left');
+            } else {
+                icon.classList.remove('bi-chevron-left');
+                icon.classList.add('bi-chevron-right');
+            }
         }
     }
+
+    function closeSidebarIfOutside(event) {
+        if (window.innerWidth <= 992 && 
+            !sidebar.contains(event.target) && 
+            !sidebarToggle.contains(event.target) &&
+            sidebar.classList.contains('show')) {
+            
+            sidebar.classList.remove('show');
+            sidebarToggle.classList.add('collapsed');
+            const icon = sidebarToggle.querySelector('i');
+            icon.classList.remove('bi-chevron-left');
+            icon.classList.add('bi-chevron-right');
+        }
+    }
+
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener('click', toggleSidebarState);
+        document.addEventListener('click', closeSidebarIfOutside);
+    }
+
+    // --- 2. Scroll to Comment from URL Hash ---
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#comment-')) {
+        const element = document.querySelector(hash);
+        if (element) {
+            // Small delay to ensure rendering
+            setTimeout(() => {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                element.classList.add('border', 'border-primary');
+            }, 100);
+        }
+    }
+
+    // --- 3. Character Count for Comment Form ---
+    const commentBody = document.getElementById('body');
+    if (commentBody) {
+        commentBody.addEventListener('input', function(e) {
+            const count = e.target.value.length;
+            const counter = document.getElementById('comment-char-count');
+            if (counter) counter.textContent = count;
+            
+            if (count > 1000) {
+                e.target.classList.add('is-invalid');
+            } else {
+                e.target.classList.remove('is-invalid');
+            }
+        });
+    }
 });
+
+// --- 4. Global Toggle Reply Function (Needs to be on window) ---
+window.toggleReplyForm = function(commentId) {
+    const form = document.getElementById(`reply-form-${commentId}`);
+    if (form) {
+        const isHidden = form.style.display === 'none' || form.style.display === '';
+        form.style.display = isHidden ? 'block' : 'none';
+        
+        if (isHidden) {
+            const textarea = form.querySelector('textarea');
+            if (textarea) textarea.focus();
+        }
+    }
+};
 </script>
 @endpush

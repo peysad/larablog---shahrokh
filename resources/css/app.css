@@ -1,18 +1,25 @@
 /* LaraBlog Color Palette */
 :root {
     --primary: #FF2D20;
+    --primary-hover: #E8291C;
     --secondary: #0D8ABC;
     --accent: #FFC107;
     --background: #F5F5F5;
     --sidebar: #1A202C;
+    --sidebar-hover: #2D3748;
     --text-main: #2D3748;
     --link-color: #3182CE;
+    --link-hover: #2C5282;
     --card-bg: #FFFFFF;
     --border-color: #E2E8F0;
+    --border-hover: #CBD5E0;
     --success: #10B981;
     --danger: #EF4444;
     --warning: #F59E0B;
     --info: #3B82F6;
+    --shadow-hover: 0 0.5rem 1rem rgba(0,0,0,0.15);
+    --transition-fast: all 0.2s ease;
+    --transition-normal: all 0.3s ease;
 }
 
 /* Global Styles */
@@ -27,7 +34,7 @@ body {
 a {
     color: var(--link-color);
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: var(--transition-fast);
 }
 
 a:hover {
@@ -43,13 +50,15 @@ a:hover {
 /* Card Styles */
 .card {
     background-color: var(--card-bg);
-    border-color: var(--border-color);
-    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    transition: var(--transition-normal);
     height: 100%;
 }
 
 .card:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08) !important;
+    box-shadow: var(--shadow-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
 }
 
 /* Compact Post Card Styles */
@@ -60,6 +69,11 @@ a:hover {
 
 .card-compact .card-img-top {
     height: 120px !important;
+    transition: var(--transition-normal);
+}
+
+.card-compact:hover .card-img-top {
+    transform: scale(1.02);
 }
 
 .card-compact .card-text {
@@ -70,11 +84,21 @@ a:hover {
 .card-compact .card-title {
     font-size: 1rem;
     margin-bottom: 0.5rem;
+    transition: var(--transition-fast);
+}
+
+.card-compact:hover .card-title {
+    color: var(--primary);
 }
 
 .card-compact .btn-sm {
     padding: 0.25rem 0.5rem;
     font-size: 0.75rem;
+    transition: var(--transition-fast);
+}
+
+.card-compact .btn-sm:hover {
+    transform: translateY(-1px);
 }
 
 /* Posts Container with Scroll */
@@ -95,6 +119,7 @@ a:hover {
 .posts-container::-webkit-scrollbar-thumb {
     background: var(--border-color);
     border-radius: 3px;
+    transition: var(--transition-fast);
 }
 
 .posts-container::-webkit-scrollbar-thumb:hover {
@@ -127,26 +152,97 @@ a:hover {
     box-shadow: 0 0 0 0.25rem rgba(255, 45, 32, 0.15);
 }
 
-/* Button Styles */
+/* Button Styles - Enhanced Hover Effects */
 .btn-primary {
     background-color: var(--primary);
     border-color: var(--primary);
     font-weight: 600;
+    transition: var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
 }
 
 .btn-primary:hover {
-    background-color: #E8291C;
-    border-color: #E8291C;
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(255, 45, 32, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 0.125rem 0.25rem rgba(255, 45, 32, 0.2);
 }
 
 .btn-outline-primary {
     color: var(--primary);
     border-color: var(--primary);
+    transition: var(--transition-fast);
 }
 
 .btn-outline-primary:hover {
     background-color: var(--primary);
     border-color: var(--primary);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(255, 45, 32, 0.2);
+}
+
+.btn-outline-primary:active {
+    transform: translateY(0);
+}
+
+.btn-success {
+    background-color: var(--success);
+    border-color: var(--success);
+    transition: var(--transition-fast);
+}
+
+.btn-success:hover {
+    background-color: #0ea579;
+    border-color: #0ea579;
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background-color: var(--danger);
+    border-color: var(--danger);
+    transition: var(--transition-fast);
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+    border-color: #dc2626;
+    transform: translateY(-1px);
+}
+
+.btn-warning {
+    background-color: var(--warning);
+    border-color: var(--warning);
+    color: var(--text-main);
+    transition: var(--transition-fast);
+}
+
+.btn-warning:hover {
+    background-color: #d97706;
+    border-color: #d97706;
+    color: white;
+    transform: translateY(-1px);
 }
 
 /* Navbar */
@@ -157,18 +253,69 @@ a:hover {
 .navbar-brand {
     font-weight: 800;
     letter-spacing: -0.5px;
+    transition: var(--transition-fast);
+}
+
+.navbar-brand:hover {
+    color: var(--primary) !important;
+}
+
+/* Navbar Navigation Links - Active State */
+.navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    transition: var(--transition-fast);
+    position: relative;
+    padding: 0.5rem 1rem;
+}
+
+.navbar-nav .nav-link:hover {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary);
+    transition: var(--transition-fast);
+    transform: translateX(-50%);
+}
+
+.navbar-nav .nav-link:hover::after {
+    width: 70%;
+}
+
+/* Active State for Current Page */
+.navbar-nav .nav-link.active {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.15);
+    font-weight: 600;
+}
+
+.navbar-nav .nav-link.active::after {
+    width: 100%;
+    background-color: var(--primary);
 }
 
 /* Alerts */
 .alert {
     border: none;
     border-left: 4px solid;
+    transition: var(--transition-fast);
+}
+
+.alert:hover {
+    transform: translateX(5px);
 }
 
 .alert-success {
     background-color: rgba(16, 185, 129, 0.1);
     border-left-color: var(--success);
-    color: --success;
+    color: var(--success);
 }
 
 .alert-danger {
@@ -197,4 +344,44 @@ footer {
     .main-content {
         min-height: auto;
     }
+    
+    /* Mobile-friendly hover effects */
+    .btn {
+        will-change: transform;
+    }
+    
+    .card {
+        will-change: transform;
+    }
+}
+
+/* Advanced Hover Effects for Interactive Elements */
+.interactive-element {
+    transition: var(--transition-normal);
+    cursor: pointer;
+}
+
+.interactive-element:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Focus states for accessibility */
+.btn:focus,
+.nav-link:focus,
+.form-control:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+    will-change: auto;
+}
+
+.card,
+.btn,
+.nav-link,
+.form-control {
+    will-change: transform;
 }

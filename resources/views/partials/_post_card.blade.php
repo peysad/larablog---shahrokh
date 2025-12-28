@@ -1,21 +1,21 @@
 @props(['post', 'compact' => false])
 
-<div class="card shadow-sm border-0 mb-4 {{ $compact ? 'card-compact' : 'h-100' }}">
+<div class="card shadow-sm border-0 mb-4 {{ $compact ? 'card-compact' : 'h-100 post-card' }}">
     @if($post->featured_image)
         <img src="{{ $post->getImage('card') }}" 
              alt="{{ $post->title }}" 
-             class="card-img-top" 
+             class="card-img-top post-card-image" 
              style="height: {{ $compact ? '120px' : '200px' }}; object-fit: cover;">
     @endif
 
-    <div class="card-body d-flex flex-column">
+    <div class="card-body d-flex flex-column post-card-body">
         <!-- Meta -->
         <div class="d-flex justify-content-between align-items-center text-muted small mb-2">
             <span class="d-flex align-items-center">
                 <!-- Fix: Added Author Avatar with Fallback Logic -->
                 <img src="{{ $post->author->avatar_url }}" 
                      alt="{{ $post->author->name }}" 
-                     class="rounded-circle me-1" 
+                     class="rounded-circle me-1 post-card-author-img" 
                      width="24" height="24" 
                      style="object-fit: cover;">
                 
@@ -30,13 +30,13 @@
             </span>
             @endif
             
-            <span>
+            <span class="post-card-date">
                 <i class="bi bi-calendar"></i> {{ $post->published_at?->format('M d, Y') }}
             </span>
         </div>
 
         <!-- Title -->
-        <h5 class="card-title fw-bold mb-2">
+        <h5 class="card-title fw-bold mb-2 post-card-title">
             <a href="{{ route('posts.show', $post) }}" class="text-decoration-none text-dark">
                 {{ $post->title }}
             </a>
@@ -44,11 +44,11 @@
 
         <!-- Excerpt -->
         @if($post->excerpt)
-            <p class="card-text text-muted flex-grow-1 {{ $compact ? 'small' : '' }}">
+            <p class="card-text text-muted flex-grow-1 {{ $compact ? 'small' : 'post-card-content' }}">
                 {{ Str::limit($post->excerpt, $compact ? 80 : 150) }}
             </p>
         @else
-            <p class="card-text text-muted flex-grow-1 {{ $compact ? 'small' : '' }}">
+            <p class="card-text text-muted flex-grow-1 {{ $compact ? 'small' : 'post-card-content' }}">
                 {{ Str::limit(strip_tags($post->body), $compact ? 80 : 150) }}
             </p>
         @endif
@@ -57,12 +57,12 @@
         <div class="mb-3">
             @if($post->categories->count())
                 @foreach($post->categories->take(2) as $category)
-                    <span class="badge bg-secondary me-1 {{ $compact ? 'small' : '' }}">{{ $category->name }}</span>
+                    <span class="badge bg-secondary me-1 {{ $compact ? 'small' : 'post-card-tag' }}">{{ $category->name }}</span>
                 @endforeach
             @endif
             @if($post->tags->count())
                 @foreach($post->tags->take(3) as $tag)
-                    <span class="badge bg-light text-dark me-1 {{ $compact ? 'small' : '' }}">#{{ $tag->name }}</span>
+                    <span class="badge bg-light text-dark me-1 {{ $compact ? 'small' : 'post-card-tag' }}">#{{ $tag->name }}</span>
                 @endforeach
             @endif
         </div>
@@ -90,7 +90,7 @@
                         </button>
                     </form>
                 @endif
-            <a href="{{ route('posts.show', $post) }}" class="btn btn-sm btn-primary">
+            <a href="{{ route('posts.show', $post) }}" class="btn btn-sm btn-primary post-card-button post-card-button-primary">
                 Read More <i class="bi bi-arrow-right"></i>
             </a>
         </div>
