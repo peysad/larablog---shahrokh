@@ -4,6 +4,19 @@
 
 @section('content')
 <div class="container-fluid py-4">
+    <!-- Search Bar -->
+    <div class="search-container mb-4">
+        <form class="search-form" action="{{ route('posts.index') }}" method="GET">
+            <div class="input-group input-group-lg">
+                <input type="search" class="form-control search-input" name="search" 
+                       placeholder="Search posts..." aria-label="Search" value="{{ request('search') }}">
+                <button class="btn btn-primary search-button" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
     <div class="row">
         <!-- Left Column: Posts Grid -->
         <div class="col-lg-8">

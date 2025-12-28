@@ -9,10 +9,10 @@
     <title>@yield('title', 'LaraBlog') - Laravel Blog Platform</title>
     
     <!-- Bootstrap 5.3 RTL -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css  " rel="stylesheet">
     
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css  " rel="stylesheet">
     
     <!-- Custom Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/sidebar.css', 'resources/css/post.css'])
@@ -59,17 +59,6 @@
                         @endcan
                     @endauth
                 </ul>
-
-                <!-- Search Form -->
-                <form class="d-flex me-3" action="{{ route('posts.index') }}" method="GET" style="min-width: 250px; max-width: 300px;">
-                    <div class="input-group">
-                        <input type="search" class="form-control form-control-sm" name="search" 
-                               placeholder="Search posts..." aria-label="Search" value="{{ request('search') }}">
-                        <button class="btn btn-outline-light btn-sm" type="submit">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
-                </form>
 
                 <ul class="navbar-nav">
                     @guest
@@ -167,7 +156,7 @@
     </footer>
 
     <!-- Bootstrap Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js  "></script>
     
     <!-- Custom Scripts -->
     @stack('scripts')
