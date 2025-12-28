@@ -329,7 +329,11 @@
                 <!-- Post Meta -->
                 <div class="post-meta">
                     <div class="post-meta-item">
-                        <i class="bi bi-person"></i>
+                        <img src="{{ $post->author->avatar_url }}" 
+                            alt="{{ $post->author->name }}" 
+                            class="rounded-circle me-1" 
+                            width="24" height="24" 
+                            style="object-fit: cover;">
                         <span>Written by : {{ $post->author->name }}</span>
                     </div>
                     @if($post->updated_by && $post->updated_by !== $post->user_id)
@@ -345,6 +349,10 @@
                     <div class="post-meta-item">
                         <i class="bi bi-eye"></i>
                         <span>{{ number_format($post->views) }} views</span>
+                    </div>
+                    <div class="post-meta-item">
+                        <i class="bi bi-clock"></i>
+                        <span>{{ $post->reading_time }} min read</span>
                     </div>
                 </div>
                 

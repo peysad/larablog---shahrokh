@@ -1,0 +1,253 @@
+BLOG_PROJECT/
+│
+├── .editorconfig
+├── .env
+├── .env.example
+├── .gitattributes
+├── .gitignore
+├── README.md
+├── artisan
+├── composer.json
+├── composer.lock
+├── package-lock.json
+├── package.json
+├── phpunit.xml
+├── vite.config.js
+│
+├── app/
+│   ├── Console/
+│   │   └── Commands/
+│   │       └── CreateStorageDirectories.php
+│   │
+│   ├── Events/
+│   │   └── CommentPosted.php
+│   │
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Controller.php
+│   │   │   ├── Admin/
+│   │   │   │   ├── CategoryAdminController.php
+│   │   │   │   ├── CommentAdminController.php
+│   │   │   │   ├── DashboardController.php
+│   │   │   │   ├── PostAdminController.php
+│   │   │   │   ├── TagAdminController.php
+│   │   │   │   └── UserAdminController.php
+│   │   │   │
+│   │   │   ├── Auth/
+│   │   │   │   ├── ForgotPasswordController.php
+│   │   │   │   ├── LoginController.php
+│   │   │   │   ├── RegisterController.php
+│   │   │   │   └── ResetPasswordController.php
+│   │   │   │
+│   │   │   ├── AuthorController.php
+│   │   │   ├── CommentController.php
+│   │   │   ├── DashboardController.php
+│   │   │   └── PostController.php
+│   │   │
+│   │   ├── Middleware/
+│   │   │   └── CheckRole.php
+│   │   │
+│   │   └── Requests/
+│   │       ├── CategoryRequest.php
+│   │       ├── CommentRequest.php
+│   │       ├── PostRequest.php
+│   │       ├── ProfileRequest.php
+│   │       ├── TagRequest.php
+│   │       │
+│   │       └── Auth/
+│   │           ├── LoginRequest.php
+│   │           └── RegisterRequest.php
+│   │
+│   ├── Listeners/
+│   │   └── SendCommentNotification.php
+│   │
+│   ├── Logging/
+│   │   └── ImageProcessorFormatter.php
+│   │
+│   ├── Models/
+│   │   ├── Category.php
+│   │   ├── Comment.php
+│   │   ├── Post.php
+│   │   ├── Tag.php
+│   │   └── User.php
+│   │
+│   ├── Notifications/
+│   │   └── NewCommentNotification.php
+│   │
+│   ├── Policies/
+│   │   ├── CategoryPolicy.php
+│   │   ├── CommentPolicy.php
+│   │   ├── PostPolicy.php
+│   │   ├── TagPolicy.php
+│   │   └── UserPolicy.php
+│   │
+│   ├── Providers/
+│   │   ├── AppServiceProvider.php
+│   │   ├── AuthServiceProvider.php
+│   │   └── EventServiceProvider.php
+│   │
+│   └── Services/
+│       └── ImageService.php
+│
+├── bootstrap/
+│   ├── app.php
+│   ├── providers.php
+│   │
+│   └── cache/
+│       ├── .gitignore
+│       ├── packages.php
+│       └── services.php
+│
+├── config/
+│   ├── app.php
+│   ├── auth.php
+│   ├── blog.php
+│   ├── cache.php
+│   ├── database.php
+│   ├── filesystems.php
+│   ├── image.php
+│   ├── logging.php
+│   ├── mail.php
+│   ├── permission.php
+│   ├── queue.php
+│   ├── services.php
+│   └── session.php
+│
+├── database/
+│   └── migrations/
+│       ├── 0001_01_01_000000_create_users_table.php
+│       ├── 0001_01_01_000001_create_cache_table.php
+│       ├── 0001_01_01_000002_create_jobs_table.php
+│       ├── 2025_12_22_172347_create_permission_tables.php
+│       ├── 2025_12_22_193055_create_posts_table.php
+│       ├── 2025_12_22_193059_create_categories_table.php
+│       ├── 2025_12_22_193102_create_tags_table.php
+│       ├── 2025_12_22_193608_create_category_post_table.php
+│       ├── 2025_12_22_193616_create_post_tag_table.php
+│       ├── 2025_12_23_185337_add_updated_by_to_posts_table.php
+│       ├── 2025_12_26_190609_create_comments_table.php
+│       └── 2025_12_26_220851_add_allow_comments_to_posts_table.php
+│
+├── resources/
+│   ├── css/
+│   │   ├── admin.css
+│   │   └── app.css
+│   │
+│   ├── js/
+│   │   ├── admin.js
+│   │   ├── app.js
+│   │   └── bootstrap.js
+│   │
+│   └── views/
+│       ├── dashboard.blade.php
+│       │
+│       ├── admin/
+│       │   ├── dashboard.blade.php
+│       │   │
+│       │   ├── categories/
+│       │   │   ├── create.blade.php
+│       │   │   ├── edit.blade.php
+│       │   │   └── index.blade.php
+│       │   │
+│       │   ├── comments/
+│       │   │   ├── index.blade.php
+│       │   │   └── pending.blade.php
+│       │   │
+│       │   ├── partials/
+│       │   │   └── _sidebar.blade.php
+│       │   │
+│       │   ├── posts/
+│       │   │   └── index.blade.php
+│       │   │
+│       │   └── tags/
+│       │       ├── create.blade.php
+│       │       ├── edit.blade.php
+│       │       └── index.blade.php
+│       │
+│       ├── auth/
+│       │   ├── login.blade.php
+│       │   ├── register.blade.php
+│       │   │
+│       │   └── passwords/
+│       │       ├── email.blade.php
+│       │       └── reset.blade.php
+│       │
+│       ├── authors/
+│       │   ├── edit.blade.php
+│       │   └── show.blade.php
+│       │
+│       ├── layouts/
+│       │   ├── admin.blade.php
+│       │   └── app.blade.php
+│       │
+│       ├── partials/
+│       │   ├── _comment_form.blade.php
+│       │   ├── _comments.blade.php
+│       │   ├── _post_card.blade.php
+│       │   └── _sidebar.blade.php
+│       │
+│       ├── posts/
+│       │   ├── create.blade.php
+│       │   ├── edit.blade.php
+│       │   ├── index.blade.php
+│       │   ├── show.blade.php
+│       │   │
+│       │   └── partials/
+│       │       └── form.blade.php
+│
+├── routes/
+│   ├── console.php
+│   └── web.php
+│
+└── storage/
+    └── app/
+        ├── .gitignore
+        │
+        ├── private/
+        │   └── .gitignore
+        │
+        └── public/
+            ├── .gitignore
+            │
+            ├── categories/
+            │   ├── card/
+            │   ├── large/
+            │   ├── medium/
+            │   ├── social/
+            │   ├── thumb/
+            │   └── thumbnail/
+            │
+            ├── posts/
+            │   ├── card/
+            │   │   ├── kkVZkwQa_7542ed36509ffa5581197fabff7ff469f35f8312ee6e6a4081ef611272ea28ad.jpg
+            │   │   └── v416JqrR_358dd4746c1781be54038089dcac307962db8fe05d874d96ee5115de8877166c.jpg
+            │   │
+            │   ├── large/
+            │   ├── medium/
+            │   │
+            │   ├── original/
+            │   │   ├── DcZDrdPP_6bcd430fe18a70bafd10c4fb2857452974ff78c9bc21c8dbb91221ef466cad8b.jpg
+            │   │   ├── kkVZkwQa_7542ed36509ffa5581197fabff7ff469f35f8312ee6e6a4081ef611272ea28ad.jpg
+            │   │   └── v416JqrR_358dd4746c1781be54038089dcac307962db8fe05d874d96ee5115de8877166c.jpg
+            │   │
+            │   ├── social/
+            │   │   ├── kkVZkwQa_7542ed36509ffa5581197fabff7ff469f35f8312ee6e6a4081ef611272ea28ad.jpg
+            │   │   └── v416JqrR_358dd4746c1781be54038089dcac307962db8fe05d874d96ee5115de8877166c.jpg
+            │   │
+            │   ├── thumb/
+            │   │
+            │   └── thumbnail/
+            │       ├── kkVZkwQa_7542ed36509ffa5581197fabff7ff469f35f8312ee6e6a4081ef611272ea28ad.jpg
+            │       └── v416JqrR_358dd4746c1781be54038089dcac307962db8fe05d874d96ee5115de8877166c.jpg
+            │
+            └── users/
+                ├── card/
+                ├── large/
+                ├── medium/
+                │
+                ├── original/
+                │   └── OX0M35NA_8bd5c82182ab0f06962756984597dc034cda3ae95e3af92c2ffde4b28a426123.jpg
+                │
+                ├── social/
+                ├── thumb/
+                └── thumbnail/

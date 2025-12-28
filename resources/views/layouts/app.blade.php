@@ -75,10 +75,19 @@
                         @endcan
 
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle"></i> {{ auth()->user()->name }}
+                            <!-- 
+                                FIX: Added 'd-flex align-items-center' for alignment 
+                                Replaced icon with <img> tag using avatar_url accessor
+                            -->
+                            <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                                <span style="margin-left: 3px;">{{ auth()->user()->name }}</span>
+                                <img src="{{ auth()->user()->avatar_url }}" 
+                                     alt="{{ auth()->user()->name }}" 
+                                     class="rounded-circle border border-2 border-white me-1" 
+                                     width="35" height="35" 
+                                     style="object-fit: cover;">
                             </a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu dropdown-menu-start">
                                 <li>
                                     <a class="dropdown-item" href="#">
                                         <i class="bi bi-gear"></i> Profile Settings

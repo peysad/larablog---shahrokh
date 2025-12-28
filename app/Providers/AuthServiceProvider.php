@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\Gate;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Models\User;
 use App\Models\Comment;
 use App\Policies\PostPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\TagPolicy;
 use App\Policies\CommentPolicy;
+use App\Policies\UserPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -22,8 +24,9 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Post::class => PostPolicy::class,
-        Category::class => CategoryPolicy::class, // Add this
-        Tag::class => TagPolicy::class, // Add this
+        Category::class => CategoryPolicy::class,
+        Tag::class => TagPolicy::class,
+        User::class => UserPolicy::class,
     ];
 
     /**

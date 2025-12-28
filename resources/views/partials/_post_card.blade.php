@@ -11,16 +11,25 @@
     <div class="card-body d-flex flex-column">
         <!-- Meta -->
         <div class="d-flex justify-content-between align-items-center text-muted small mb-2">
-            <span>
-                <i class="bi bi-person"></i> 
-                <span class="fw-bold text-dark">Written by : {{ $post->author->name }}</span>
+            <span class="d-flex align-items-center">
+                <!-- Fix: Added Author Avatar with Fallback Logic -->
+                <img src="{{ $post->author->avatar_url }}" 
+                     alt="{{ $post->author->name }}" 
+                     class="rounded-circle me-1" 
+                     width="24" height="24" 
+                     style="object-fit: cover;">
+                
+                <span class="fw-bold text-dark" style="margin-left: 3px;">Written by : {{ $post->author->name }}</span>
             </span>
+            
             @if($post->updated_by && $post->updated_by !== $post->user_id)
-            <span>
-                <i class="bi bi-pencil-square"></i>
+            <span class="d-flex align-items-center">
+                <!-- Optional: You could add avatar here too if needed -->
+                <i class="bi bi-pencil-square ms-1"></i>
                 <span>Edited by : {{ $post->updater->name }}</span>
             </span>
             @endif
+            
             <span>
                 <i class="bi bi-calendar"></i> {{ $post->published_at?->format('M d, Y') }}
             </span>
@@ -65,6 +74,10 @@
                 <span class="ms-2">
                     <i class="bi bi-chat-dots"></i> 
                     {{ $post->comments_count ?? 0 }}
+                </span>
+                <span>
+                    <i class="bi bi-clock"></i>
+                    {{ $post->reading_time }} min read
                 </span>
             </div>
              <!-- Accesses -->

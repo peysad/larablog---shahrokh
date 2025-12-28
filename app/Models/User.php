@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\Post;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -61,9 +63,22 @@ class User extends Authenticatable
      */
     public function getAvatarUrlAttribute(): string
     {
-        return $this->avatar 
-            ? asset('storage/' . $this->avatar) 
-            : asset('images/default-avatar.png');
+        if (empty($this->avatar)) {
+            return 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($this->email))) . '?s=150&d=mp';
+        }
+
+        $thumbPath = str_ireplace('original', 'thumb', $this->avatar);
+        $originalPath = $this->avatar;
+
+        if (Storage::disk('public')->exists($thumbPath)) {
+            return asset('storage/' . $thumbPath);
+        }
+
+        if (Storage::disk('public')->exists($originalPath)) {
+            return asset('storage/' . $originalPath);
+        }
+
+        return 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($this->email))) . '?s=150&d=mp';
     }
 
     /**
@@ -96,5 +111,19 @@ class User extends Authenticatable
     public function unreadNotificationsCount(): int
     {
         return $this->unreadNotifications()->count();
+    }
+
+    // Add relationship for profile updates
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+    * Get user's published posts count.
+    */
+    public function getPublishedPostsCountAttribute(): int
+    {
+        return $this->posts()->published()->count();
     }
 }

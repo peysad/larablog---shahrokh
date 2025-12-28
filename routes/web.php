@@ -13,6 +13,10 @@ use App\Http\Controllers\Admin\CategoryAdminController;
 use App\Http\Controllers\Admin\TagAdminController;
 use App\Http\Controllers\Admin\CommentAdminController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\Admin\PostAdminController;
+use App\Http\Controllers\Admin\UserAdminController;
+use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
 // ==== Guest Routes (Unauthenticated) ====
 Route::middleware('guest')->group(function () {
@@ -26,14 +30,19 @@ Route::middleware('guest')->group(function () {
     Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
-// ==== Authenticated Routes ====
+// ==== Public Routes ====
+// Updated Home Route (Step 5.14)
+Route::get('/', fn() => redirect()->route('posts.index'))->name('home');
+
+// ==== Author Routes (New) ====
+Route::get('author/{user}', [AuthorController::class, 'show'])->name('author.show');
 Route::middleware('auth')->group(function () {
-    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('profile/edit', [AuthorController::class, 'edit'])->name('author.edit');
+    Route::put('profile', [AuthorController::class, 'update'])->name('author.update');
 });
 
 // ==== Public Routes for Filtering (Categories & Tags) ====
-// Category Posts
+// Kept existing implementation
 Route::get('categories/{category:slug}', function (\App\Models\Category $category) {
     $posts = $category->posts()
         ->with(['author', 'categories', 'tags'])
@@ -66,54 +75,54 @@ Route::middleware(['auth', 'role:Admin|Editor'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        // Admin Dashboard (Updated to Controller)
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        // Category Management
+         // --- User Management (NEW) ---
+        Route::resource('users', UserAdminController::class)
+            ->except(['create', 'store'])
+            ->middleware('can:manage users');
+
+        // Category Management (Existing)
         Route::resource('categories', CategoryAdminController::class)
             ->except(['show'])
             ->middleware('can:manage categories');
 
-        // Tag Management
+        // Tag Management (Existing)
         Route::resource('tags', TagAdminController::class)
             ->except(['show'])
-            ->middleware('can:manage tags');        
+            ->middleware('can:manage tags');
+
+        // Comment Management (Existing - No changes as per request)
         Route::get('comments', [CommentAdminController::class, 'index'])->name('comments.index');        
         Route::get('comments/pending', [CommentAdminController::class, 'pending'])->name('comments.pending');
         Route::post('comments/{comment}/approve', [CommentAdminController::class, 'approve'])->name('comments.approve');
         Route::post('comments/{comment}/reject', [CommentAdminController::class, 'reject'])->name('comments.reject');
         Route::delete('comments/{comment}', [CommentAdminController::class, 'destroy'])->name('comments.destroy');
+
+        // Admin Post Management (New from Step 5.14)
+        Route::resource('posts', PostAdminController::class)->except(['create', 'store']);
+        
+        // Bulk Actions (New)
+        Route::post('posts/bulk-action', [PostAdminController::class, 'bulkAction'])->name('posts.bulk-action');
+        // Note: Comments bulk-action excluded per instructions
     });
 
-// ==== Author/Editor/Admin Post Management Routes ====
-// Only users with Admin, Editor, or Author roles can create, edit, delete posts
-Route::middleware(['auth', 'role:Admin|Editor|Author'])
-    ->prefix('posts')
-    ->name('posts.')
-    ->group(function () {
-        Route::get('/create', [PostController::class, 'create'])->name('create');
-        Route::post('/', [PostController::class, 'store'])->name('store');
-        
-        Route::get('/{post}/edit', [PostController::class, 'edit'])->name('edit');
-        Route::put('/{post}', [PostController::class, 'update'])->name('update');
-        Route::patch('/{post}', [PostController::class, 'update'])->name('update.patch');
-        Route::delete('/{post}', [PostController::class, 'destroy'])->name('destroy');
+// ==== Authenticated Routes ====
+Route::middleware('auth')->group(function () {
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+    
+    // User Dashboard (Existing)
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        Route::patch('/{post}/publish', [PostController::class, 'publish'])
-             ->name('publish');
-        
-        Route::patch('/{post}/toggle-status', [PostController::class, 'toggleStatus'])
-             ->name('toggle-status');
-    });
+    // User Post CRUD (New structure from Step 5.14)
+    // Replaces the old specific 'Author/Editor/Admin' group for PostController
+    Route::resource('posts', PostController::class)->except(['index', 'show']);
+    
+    // Comments (User side)
+    Route::post('comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
+    Route::resource('posts.comments', CommentController::class)->only(['store']);
+});
 
 // ==== Post Resource Routes (Public) ====
 Route::resource('posts', PostController::class)->only(['index', 'show']);
-
-Route::post('comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
-Route::resource('posts.comments', CommentController::class)->only(['store']);
-
-// ==== Public Routes ====
-Route::get('/', function () {
-    return redirect()->route('dashboard');
-})->name('home');
