@@ -8,6 +8,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/css/sidebar.css',
                 'resources/css/post.css',
+                'resources/css/dashboard.css',
                 'resources/js/app.js',
             ],
             refresh: true,

@@ -20,14 +20,6 @@
     <div class="row">
         <!-- Left Column: Posts Grid -->
         <div class="col-lg-8">
-            <!-- Create Button -->
-            @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isEditor() || auth()->user()->isAuthor()))
-                <div class="d-flex justify-content-end mb-4">
-                    <a href="{{ route('posts.create') }}" class="btn btn-primary btn-lg shadow-sm px-4 create-post-button">
-                        <i class="bi bi-plus-lg me-2"></i> New Post
-                    </a>
-                </div>
-            @endif
 
             <!-- Posts Grid Container -->
             <div class="posts-grid-container">

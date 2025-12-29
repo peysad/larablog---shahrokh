@@ -9,13 +9,13 @@
     <title>@yield('title', 'LaraBlog') - Laravel Blog Platform</title>
     
     <!-- Bootstrap 5.3 RTL -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css  " rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css  " rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     
     <!-- Custom Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/sidebar.css', 'resources/css/post.css'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/sidebar.css', 'resources/css/post.css', 'resources/css/dashboard.css'])
     
     <!-- Additional Styles Stack -->
     @stack('styles')
@@ -83,25 +83,43 @@
                                      style="object-fit: cover;">
                             </a>
                             <ul class="dropdown-menu dropdown-menu-start">
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('author.show', 'author.edit') ? 'active' : '' }}" href="{{ route('author.show', auth()->user()) }}">
-                                        <i class="bi bi-person-circle"></i> Profile
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item {{ request()->routeIs('author.edit') ? 'active' : '' }}" href="{{ route('author.edit') }}">
-                                        <i class="bi bi-gear"></i> Settings
-                                    </a>
-                                </li>
-                                @can('create', App\Models\Post::class)
-                                    <li><hr class="dropdown-divider"></li>
+                                {{-- Role-conditional navigation --}}
+                                @if(auth()->user()->hasRole(['Admin', 'Editor', 'Author']))
+                                    {{-- Content creators get full profile access --}}
                                     <li>
-                                        <a class="dropdown-item {{ request()->routeIs('posts.create') ? 'active' : '' }}" href="{{ route('posts.create') }}">
+                                        <a class="dropdown-item {{ request()->routeIs('author.show') ? 'active' : '' }}" 
+                                           href="{{ route('author.show', auth()->user()) }}">
+                                            <i class="bi bi-person-circle"></i> Public Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item {{ request()->routeIs('author.edit') ? 'active' : '' }}" 
+                                           href="{{ route('author.edit') }}">
+                                            <i class="bi bi-gear"></i> Advanced Settings
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                @else
+                                    {{-- Regular users get simplified dashboard link --}}
+                                    <li>
+                                        <a class="dropdown-item {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
+                                           href="{{ route('dashboard') }}">
+                                            <i class="bi bi-person-circle"></i> My Account
+                                        </a>
+                                    </li>
+                                @endif
+                                
+                                @can('create', App\Models\Post::class)
+                                    <li>
+                                        <a class="dropdown-item {{ request()->routeIs('posts.create') ? 'active' : '' }}" 
+                                           href="{{ route('posts.create') }}">
                                             <i class="bi bi-plus-circle"></i> Create Post
                                         </a>
                                     </li>
                                 @endcan
+                                
                                 <li><hr class="dropdown-divider"></li>
+                                
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
                                         @csrf
@@ -156,7 +174,7 @@
     </footer>
 
     <!-- Bootstrap Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js  "></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Custom Scripts -->
     @stack('scripts')

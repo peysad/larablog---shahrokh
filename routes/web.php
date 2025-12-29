@@ -31,14 +31,21 @@ Route::middleware('guest')->group(function () {
 });
 
 // ==== Public Routes ====
-// Updated Home Route (Step 5.14)
+// Updated Home Route
 Route::get('/', fn() => redirect()->route('posts.index'))->name('home');
 
-// ==== Author Routes (New) ====
+// ==== Author Routes (Profile for Content Creators Only) ====
 Route::get('author/{user}', [AuthorController::class, 'show'])->name('author.show');
-Route::middleware('auth')->group(function () {
+// Profile editing (restricted to Admin/Editor/Author)
+Route::middleware(['auth', 'role:Admin|Editor|Author'])->group(function () {
     Route::get('profile/edit', [AuthorController::class, 'edit'])->name('author.edit');
     Route::put('profile', [AuthorController::class, 'update'])->name('author.update');
+});
+
+// ==== User Dashboard Routes ====
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::put('/dashboard/profile', [DashboardController::class, 'updateProfile'])->name('dashboard.update');
 });
 
 // ==== Public Routes for Filtering (Categories & Tags) ====
