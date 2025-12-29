@@ -37,7 +37,12 @@ class AuthorController extends Controller
     public function edit()
     {
         $user = auth()->user();
-        Gate::authorize('update', $user);
+
+        // STRICT CHECK: Only allow users to edit their OWN profile via this route.
+        // This overrides the UserPolicy for this specific context.
+        if ($user->id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         return view('authors.edit', compact('user'));
     }
@@ -48,7 +53,11 @@ class AuthorController extends Controller
     public function update(ProfileRequest $request, ImageService $imageService)
     {
         $user = auth()->user();
-        Gate::authorize('update', $user);
+        
+        // STRICT CHECK: Ensure the authenticated user is only updating their own data.
+        if ($user->id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $data = $request->getProfileData();
 

@@ -1,7 +1,14 @@
 @extends('layouts.admin')
 
 @section('title', $user->name . ' - Author Profile')
-
+@push('styles')
+    <style>
+        .col-lg-8{
+            overflow-y: scroll;
+            height: 42rem;
+        }
+    </style>
+@endpush
 @section('content')
 <div class="row">
     <div class="col-lg-4 col-xl-3">
@@ -24,7 +31,7 @@
                 </div>
 
                 @if($user->bio)
-                    <p class="text-start">{{ $user->bio }}</p>
+                    <p class="text-center">{{ $user->bio }}</p>
                 @endif
 
                 <!-- Social Links -->
@@ -39,11 +46,12 @@
                 @endif
 
                 <!-- Edit Button -->
-                @can('update', $user)
+                {{-- CORRECTED: Only show the button if the logged-in user is viewing their own profile --}}
+                @if(auth()->check() && auth()->id() === $user->id)
                     <a href="{{ route('author.edit') }}" class="btn btn-primary mt-3 w-100">
                         <i class="bi bi-pencil"></i> Edit Profile
                     </a>
-                @endcan
+                @endif
             </div>
         </div>
 

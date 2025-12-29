@@ -47,6 +47,60 @@
                             style="object-fit: cover;">
                         <span>Written by : {{ $post->author->name }}</span>
                     </div>
+                    
+                    {{-- START: Social Links Implementation --}}
+                    {{-- Check if social_links array exists and is not empty --}}
+                    @if(!empty($post->author->social_links) && is_array($post->author->social_links))
+                        <div class="author-social-links ms-3 d-flex gap-2 align-items-center">
+                            
+                            {{-- GitHub --}}
+                            @if(isset($post->author->social_links['github']) && !empty($post->author->social_links['github']))
+                                <a href="{{ $post->author->social_links['github'] }}" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer" 
+                                   class="text-secondary"
+                                   title="GitHub Profile">
+                                    <i class="bi bi-github fs-5"></i>
+                                </a>
+                            @endif
+
+                            {{-- LinkedIn --}}
+                            @if(isset($post->author->social_links['linkedin']) && !empty($post->author->social_links['linkedin']))
+                                <a href="{{ $post->author->social_links['linkedin'] }}" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer" 
+                                   class="text-primary"
+                                   title="LinkedIn Profile">
+                                    <i class="bi bi-linkedin fs-5"></i>
+                                </a>
+                            @endif
+
+                            {{-- Twitter --}}
+                            @if(isset($post->author->social_links['twitter']) && !empty($post->author->social_links['twitter']))
+                                <a href="{{ $post->author->social_links['twitter'] }}" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer" 
+                                   class="text-info"
+                                   title="Twitter Profile">
+                                    <i class="bi bi-twitter fs-5"></i>
+                                </a>
+                            @endif
+
+                            {{-- Website --}}
+                            @if(isset($post->author->social_links['website']) && !empty($post->author->social_links['website']))
+                                <a href="{{ $post->author->social_links['website'] }}" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer" 
+                                   class="text-dark"
+                                   title="Website">
+                                    <i class="bi bi-globe fs-5"></i>
+                                </a>
+                            @endif
+
+                        </div>
+                    @endif
+                    {{-- END: Social Links Implementation --}}
+
                     @if($post->updated_by && $post->updated_by !== $post->user_id)
                         <div class="post-meta-item text-primary">
                             <i class="bi bi-pencil-square"></i>
@@ -103,13 +157,13 @@
                 <!-- Social Share -->
                 <div class="social-share">
                     <span class="social-share-label">Share this post:</span>
-                    <a href="#" class="social-share-btn">
+                    <a href="https://x.com" class="social-share-btn">
                         <i class="bi bi-twitter"></i> Twitter
                     </a>
-                    <a href="#" class="social-share-btn">
+                    <a href="https://www.facebook.com/" class="social-share-btn">
                         <i class="bi bi-facebook"></i> Facebook
                     </a>
-                    <a href="#" class="social-share-btn">
+                    <a href="https://www.linkedin.com/" class="social-share-btn">
                         <i class="bi bi-linkedin"></i> LinkedIn
                     </a>
                 </div>

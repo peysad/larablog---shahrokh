@@ -1,7 +1,14 @@
 @extends('layouts.app')
 
 @section('title', 'Blog Posts')
-
+@push('styles')
+<style>
+    .col-lg-8 {
+        overflow-y: scroll;
+        height: 70rem;
+    }
+</style>
+@endpush
 @section('content')
 <div class="container-fluid py-4">
     <!-- Search Bar -->

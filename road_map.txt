@@ -44,6 +44,7 @@
 │   │       ├── 📄 CommentRequest.php
 │   │       ├── 📄 PostRequest.php
 │   │       ├── 📄 ProfileRequest.php
+|   |       ├── 📄 DashboardProfileRequest.php
 │   │       ├── 📄 TagRequest.php
 │   │       └── 📁 Auth/
 │   │           ├── 📄 LoginRequest.php
