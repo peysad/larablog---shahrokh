@@ -5,7 +5,7 @@
 <style>
     .col-lg-8 {
         overflow-y: scroll;
-        height: 70rem;
+        height: 88rem;
     }
 </style>
 @endpush
