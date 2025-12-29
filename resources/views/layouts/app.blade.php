@@ -50,13 +50,25 @@
                             </a>
                         </li>
                         
-                        @can('view-admin-panel')
+                        {{-- FIXED: Split Admin/Editor links based on strict routing --}}
+                        
+                        {{-- Admins go to full dashboard --}}
+                        @role('Admin')
                             <li class="nav-item">
-                                <a class="nav-link text-warning fw-bold {{ request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
+                                <a class="nav-link text-warning fw-bold {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
                                     <i class="bi bi-shield-check"></i> Admin Panel
                                 </a>
                             </li>
-                        @endcan
+                        @endrole
+
+                        {{-- Editors go directly to Post Manager since dashboard is restricted --}}
+                        @role('Editor')
+                            <li class="nav-item">
+                                <a class="nav-link text-warning fw-bold {{ request()->routeIs('admin.posts*') ? 'active' : '' }}" href="{{ route('admin.posts.index') }}">
+                                    <i class="bi bi-pencil-square"></i> Post Manager
+                                </a>
+                            </li>
+                        @endrole
                     @endauth
                 </ul>
 

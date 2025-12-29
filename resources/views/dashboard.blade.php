@@ -85,12 +85,21 @@
                     </a>
                 @endcan
                 
-                @can('view-admin-panel')
+                {{-- FIXED: Admin Panel button is now restricted to Admins only --}}
+                {{-- Editors cannot access /admin/dashboard, so this button is hidden from them --}}
+                @role('Admin')
                     <a href="{{ route('admin.dashboard') }}" class="action-btn warning">
                         <i class="bi bi-shield-check"></i>
                         <span>Admin Panel</span>
                     </a>
-                @endcan
+                @endrole
+
+                @role('Editor')
+                    <a href="{{ route('admin.posts.index') }}" class="action-btn warning">
+                        <i class="bi bi-pencil-square"></i>
+                        <span>Manage Posts</span>
+                    </a>
+                @endrole
                 
                 <a href="{{ route('posts.index') }}" class="action-btn secondary">
                     <i class="bi bi-file-text"></i>

@@ -4,13 +4,18 @@
     </h5>
     
     <ul class="nav nav-pills flex-column">
+        
+        {{-- Dashboard: Admin Only --}}
+        @role('Admin')
         <li class="nav-item">
             <a href="{{ route('admin.dashboard') }}" 
                class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
         </li>
+        @endrole
 
+        {{-- Posts: Admin & Editor --}}
         <li class="nav-item">
             <a href="{{ route('admin.posts.index') }}" 
                class="nav-link {{ request()->routeIs('admin.posts*') ? 'active' : '' }}">
@@ -21,6 +26,8 @@
             </a>
         </li>
 
+        {{-- Categories: Admin Only --}}
+        @role('Admin')
         <li class="nav-item">
             <a href="{{ route('admin.categories.index') }}" 
                class="nav-link {{ request()->routeIs('admin.categories*') ? 'active' : '' }}">
@@ -30,7 +37,10 @@
                 </span>
             </a>
         </li>
+        @endrole
 
+        {{-- Tags: Admin Only --}}
+        @role('Admin')
         <li class="nav-item">
             <a href="{{ route('admin.tags.index') }}" 
                class="nav-link {{ request()->routeIs('admin.tags*') ? 'active' : '' }}">
@@ -40,7 +50,10 @@
                 </span>
             </a>
         </li>
+        @endrole
 
+        {{-- Comments: Admin Only --}}
+        @role('Admin')
         <li class="nav-item">
             <a href="{{ route('admin.comments.pending') }}" 
                class="nav-link {{ request()->routeIs('admin.comments.pending') ? 'active' : '' }}">
@@ -53,7 +66,10 @@
                 @endif
             </a>
         </li>
+        @endrole
 
+        {{-- Users: Admin Only --}}
+        @role('Admin')
         @can('manage users')
         <li class="nav-item">
             <a href="{{ route('admin.users.index') }}" 
@@ -65,6 +81,7 @@
             </a>
         </li>
         @endcan
+        @endrole
 
         <li class="nav-item mt-3">
             <hr class="bg-white-50">

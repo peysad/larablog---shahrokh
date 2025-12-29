@@ -23,9 +23,20 @@
     <!-- Admin Topbar -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm" style="background-color: var(--admin-topbar);">
         <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">
-                <i class="bi bi-shield-check"></i> LaraBlog Admin
-            </a>
+            {{-- FIXED: Conditional Logo Link based on Role --}}
+            @if(auth()->user()->hasRole('Admin'))
+                <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">
+                    <i class="bi bi-shield-check"></i> LaraBlog Admin
+                </a>
+            @elseif(auth()->user()->hasRole('Editor'))
+                <a class="navbar-brand fw-bold" href="{{ route('admin.posts.index') }}">
+                    <i class="bi bi-pencil-square"></i> Post Manager
+                </a>
+            @else
+                <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">
+                    <i class="bi bi-person-circle"></i> User Panel
+                </a>
+            @endif
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
                 <span class="navbar-toggler-icon"></span>

@@ -18,33 +18,53 @@
             <i class="bi bi-shield-check"></i> Admin Quick Access
         </div>
         <div class="list-group list-group-flush">
+            
+            {{-- Dashboard: Admin Only --}}
+            @role('Admin')
             <a href="{{ route('admin.dashboard') }}" class="list-group-item list-group-item-action animated-list-item">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
+            @endrole
+
+            {{-- Categories: Admin Only --}}
+            @role('Admin')
             <a href="{{ route('admin.categories.index') }}" class="list-group-item list-group-item-action animated-list-item">
                 <i class="bi bi-folder"></i> Manage Categories
                 <span class="badge bg-primary rounded-pill float-start">{{ \App\Models\Category::count() }}</span>
             </a>
+            @endrole
+
+            {{-- Tags: Admin Only --}}
+            @role('Admin')
             <a href="{{ route('admin.tags.index') }}" class="list-group-item list-group-item-action animated-list-item">
                 <i class="bi bi-tags"></i> Manage Tags
                 <span class="badge bg-secondary rounded-pill float-start">{{ \App\Models\Tag::count() }}</span>
+            </a>
+            @endrole
+
+            {{-- Posts: Admin & Editor --}}
+            <a href="{{ route('admin.posts.index') }}" class="list-group-item list-group-item-action animated-list-item">
+                <i class="bi bi-file-text"></i> Manage Posts
             </a>
         </div>
     </div>
 @endcan
 
 <!-- Pending Comments Alert -->
-@can('approve', \App\Models\Comment::class)
-    @php $pendingComments = \App\Models\Comment::where('approved', false)->count(); @endphp
-    @if($pendingComments > 0)
-        <div class="pending-comments-alert">
-            <i class="bi bi-exclamation-triangle"></i>
-            <a href="{{ route('admin.comments.pending') }}" class="text-decoration-none">
-                {{ $pendingComments }} comments pending approval
-            </a>
-        </div>
-    @endif
-@endcan
+{{-- STRICTLY HIDDEN FROM EDITORS --}}
+@role('Admin')
+    @can('approve', \App\Models\Comment::class)
+        @php $pendingComments = \App\Models\Comment::where('approved', false)->count(); @endphp
+        @if($pendingComments > 0)
+            <div class="pending-comments-alert">
+                <i class="bi bi-exclamation-triangle"></i>
+                <a href="{{ route('admin.comments.pending') }}" class="text-decoration-none">
+                    {{ $pendingComments }} comments pending approval
+                </a>
+            </div>
+        @endif
+    @endcan
+@endrole
 
 <!-- Categories Widget -->
 @php
