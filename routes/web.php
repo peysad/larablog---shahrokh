@@ -33,6 +33,10 @@ Route::middleware('guest')->group(function () {
 // ==== Public Routes ====
 Route::get('/', fn() => redirect()->route('posts.index'))->name('home');
 
+// ==== Authors Directory ====
+// Public access to list Admins, Editors, and Authors
+Route::get('/authors', [AuthorController::class, 'index'])->name('authors.index');
+
 // ==== Author Routes (Profile for Content Creators Only) ====
 Route::get('author/{user}', [AuthorController::class, 'show'])->name('author.show');
 Route::middleware(['auth', 'role:Admin|Editor|Author'])->group(function () {

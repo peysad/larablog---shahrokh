@@ -15,7 +15,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     
     <!-- Custom Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/sidebar.css', 'resources/css/post.css', 'resources/css/dashboard.css'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/sidebar.css', 'resources/css/post.css', 'resources/css/dashboard.css', 'resources/css/author.css'])
     
     <!-- Additional Styles Stack -->
     @stack('styles')
@@ -43,6 +43,13 @@
                         </a>
                     </li>
                     
+                    {{-- ADDED: Authors Link --}}
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium {{ request()->routeIs('authors.*') ? 'active' : '' }}" href="{{ route('authors.index') }}">
+                            <i class="bi bi-people-fill"></i> Authors
+                        </a>
+                    </li>
+
                     @auth
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
@@ -87,12 +94,12 @@
                     @else
                         <li class="nav-item dropdown">
                             <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">
-                                <span class="me-2" style="margin-right: 8px;">{{ auth()->user()->name }}</span>
                                 <img src="{{ auth()->user()->avatar_url }}" 
                                      alt="{{ auth()->user()->name }}" 
                                      class="rounded-circle border border-2 border-white" 
                                      width="35" height="35" 
                                      style="object-fit: cover;">
+                                <span class="me-2" style="margin-right: 8px;">{{ auth()->user()->name }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-start">
                                 {{-- Role-conditional navigation --}}

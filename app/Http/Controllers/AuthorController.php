@@ -11,6 +11,26 @@ use Illuminate\Support\Facades\{DB, Log, Storage, Gate};
 class AuthorController extends Controller
 {
     /**
+     * Display a list of all content creators (Admins, Editors, Authors).
+     */
+    public function index(Request $request)
+    {
+        // Fetch users with Admin, Editor, or Author roles
+        $query = User::role(['Admin', 'Editor', 'Author']);
+
+        // Apply Search if exists
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // Paginate results
+        $authors = $query->orderBy('created_at', 'desc')
+                         ->paginate(12)
+                         ->withQueryString();
+
+        return view('authors.index', compact('authors'));
+    }
+    /**
      * Show the author's profile and posts.
      */
     public function show(User $user)
