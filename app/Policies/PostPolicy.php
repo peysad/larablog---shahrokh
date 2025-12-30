@@ -76,4 +76,14 @@ class PostPolicy
     {
         return $user->hasPermissionTo('publish posts');
     }
+
+    public function restore(User $user, Post $post)
+    {
+        return $user->hasRole(['Admin', 'Editor']);
+    }
+
+    public function forceDelete(User $user, Post $post)
+    {
+        return $user->hasRole('Admin');
+    }
 }

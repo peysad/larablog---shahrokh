@@ -14,14 +14,21 @@
         </button>
     </div>
 @endsection
+
 @push('styles')
     <style>
         .card {
             height: 65vh;
             overflow-y: scroll;
         }
+        /* استایل برای ردیف‌های حذف شده */
+        tr.table-light td {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
     </style>
 @endpush
+
 @section('content')
 <div class="card admin-card">
     <div class="card-body">
@@ -35,6 +42,9 @@
                     </option>
                     <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>
                         Draft
+                    </option>
+                    <option value="trashed" {{ request('status') === 'trashed' ? 'selected' : '' }}>
+                        Trashed
                     </option>
                 </select>
             </div>
@@ -100,7 +110,7 @@
                 </thead>
                 <tbody>
                     @forelse($posts as $post)
-                        <tr>
+                        <tr class="{{ $post->trashed() ? 'table-light' : '' }}">
                             <td>
                                 <input type="checkbox" name="ids[]" value="{{ $post->id }}" 
                                        class="post-checkbox">
@@ -114,9 +124,13 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('author.show', $post->author) }}">
-                                    {{ $post->author->name }}
-                                </a>
+                                @if($post->author)
+                                    <a href="{{ route('author.show', $post->author) }}">
+                                        {{ $post->author->name }}
+                                    </a>
+                                @else
+                                    <span class="text-muted">Unknown</span>
+                                @endif
                             </td>
                             <td>
                                 @forelse($post->categories->take(2) as $category)
@@ -129,9 +143,13 @@
                                 @endif
                             </td>
                             <td>
-                                <span class="badge bg-{{ $post->status === 'published' ? 'success' : 'secondary' }}">
-                                    {{ ucfirst($post->status) }}
-                                </span>
+                                @if($post->trashed())
+                                    <span class="badge bg-danger">Trashed</span>
+                                @else
+                                    <span class="badge bg-{{ $post->status === 'published' ? 'success' : 'secondary' }}">
+                                        {{ ucfirst($post->status) }}
+                                    </span>
+                                @endif
                             </td>
                             <td>{{ number_format($post->views) }}</td>
                             <td>
@@ -139,25 +157,51 @@
                             </td>
                             <td>{{ $post->created_at->format('Y-m-d') }}</td>
                             <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('posts.edit', $post) }}" 
-                                       class="btn btn-outline-primary" title="Edit">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a href="{{ route('posts.show', $post) }}" 
-                                       class="btn btn-outline-success" title="View" target="_blank">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <form action="{{ route('admin.posts.destroy', $post) }}" 
-                                          method="POST" class="d-inline" 
-                                          onsubmit="return confirm('Delete this post?')">
+                                @if($post->trashed())
+                                    <!-- Actions for Trashed Posts -->
+                                    <form action="{{ route('admin.posts.restore', $post->id) }}" 
+                                          method="POST" class="d-inline">
                                         @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger" title="Delete">
-                                            <i class="bi bi-trash"></i>
+                                        <button type="submit" 
+                                                class="btn btn-sm btn-outline-success" 
+                                                title="Restore Post"
+                                                onclick="return confirm('Restore this post?')">
+                                            <i class="bi bi-arrow-counterclockwise"></i>
                                         </button>
                                     </form>
-                                </div>
+                                    
+                                    <form action="{{ route('admin.posts.forceDelete', $post->id) }}" 
+                                          method="POST" class="d-inline">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" 
+                                                class="btn btn-sm btn-outline-danger" 
+                                                title="Delete Forever"
+                                                onclick="return confirm('Are you sure? This will permanently delete the post and cannot be undone!')">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <!-- Actions for Active Posts -->
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ route('posts.edit', $post) }}" 
+                                           class="btn btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{{ route('posts.show', $post) }}" 
+                                           class="btn btn-outline-success" title="View" target="_blank">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <form action="{{ route('admin.posts.destroy', $post) }}" 
+                                              method="POST" class="d-inline" 
+                                              onsubmit="return confirm('Move this post to trash?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endif
                             </td>
                         </tr>
                     @empty
@@ -196,7 +240,7 @@ function toggleSelectAll() {
     const checkboxes = document.querySelectorAll('.post-checkbox');
     checkboxes.forEach(cb => {
         cb.checked = selectAll.checked;
-        // Trigger change event to update the bulk action form inputs
+        // Trigger change event to update bulk action form inputs
         cb.dispatchEvent(new Event('change', { bubbles: true }));
     });
     updateBulkCount();
@@ -259,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cb.addEventListener('change', function() {
             updateBulkCount();
             
-            // Also update the bulk action form inputs when individual checkboxes change
+            // Also update bulk action form inputs when individual checkboxes change
             const checked = document.querySelectorAll('.post-checkbox:checked');
             updateBulkActionFormInputs(checked);
         });

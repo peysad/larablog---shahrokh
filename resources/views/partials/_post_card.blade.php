@@ -80,19 +80,60 @@
                     {{ $post->reading_time }} min read
                 </span>
             </div>
-             <!-- Accesses -->
-                @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isEditor()))
-                    <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Delete Post" onclick="return confirm('Are you sure about deleting this post ?')">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </form>
-                @endif
+            
+            <!-- Actions -->
+            @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isEditor()))
+                <button type="button" 
+                        class="btn btn-sm btn-outline-danger border-0" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#deletePostModal{{ $post->id }}"
+                        title="Delete Post">
+                    <i class="bi bi-trash"></i>
+                </button>
+            @endif
+
             <a href="{{ route('posts.show', $post) }}" class="btn btn-sm btn-primary post-card-button post-card-button-primary">
                 Read More <i class="bi bi-arrow-right"></i>
             </a>
         </div>
     </div>
 </div>
+
+<!-- Delete Post Modal -->
+@if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isEditor()))
+<div class="modal fade" id="deletePostModal{{ $post->id }}" tabindex="-1" aria-labelledby="deletePostModalLabel{{ $post->id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('posts.destroy', $post) }}" method="POST">
+                @csrf @method('DELETE')
+                
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deletePostModalLabel{{ $post->id }}">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Delete Post
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <p>Are you sure you want to move the following post to the trash?</p>
+                    <div class="alert alert-light border">
+                        <strong class="text-primary">{{ $post->title }}</strong>
+                    </div>
+                    <p class="mb-0 small text-muted">
+                        <i class="bi bi-info-circle"></i> This post can be restored from the admin panel later.
+                    </p>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light text-dark" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Move to Trash
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif

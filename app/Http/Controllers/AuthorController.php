@@ -36,7 +36,9 @@ class AuthorController extends Controller
     public function show(User $user)
     {
         $posts = $user->posts()
-            ->with(['categories', 'tags'])
+            ->with(['author', 'categories', 'tags'])->withCount(['comments' => function ($query) {
+                $query->approved();
+            }])
             ->published()
             ->latest('published_at')
             ->paginate(12);

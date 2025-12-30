@@ -127,6 +127,8 @@ Route::middleware(['auth', 'role:Admin|Editor'])
         
         // Bulk Actions
         Route::post('posts/bulk-action', [PostAdminController::class, 'bulkAction'])->name('posts.bulk-action');
+        Route::post('posts/{id}/restore', [PostAdminController::class, 'restore'])->name('posts.restore');
+        Route::delete('posts/{id}/force-delete', [PostAdminController::class, 'forceDelete'])->name('posts.forceDelete');
     });
 
 // ==== Authenticated Routes (User Side) ====

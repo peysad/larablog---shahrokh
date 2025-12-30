@@ -3,140 +3,145 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Post;
 use App\Http\Requests\PostRequest;
-use App\Models\{User, Post, Category, Tag};
 use App\Services\ImageService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{DB, Gate, Log, Storage};
-use Symfony\Component\Console\Input\Input;
+use Illuminate\Support\Facades\{Auth, DB, Gate, Log};
+use Illuminate\Support\Facades\URL;
 
 class PostAdminController extends Controller
 {
     /**
-     * Display all posts (including drafts) for admin.
+     * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        Gate::authorize('viewAny', Post::class);
+        $query = Post::with(['author', 'categories']);
 
-        $posts = Post::query()
-            ->with(['author', 'categories', 'tags'])
-            ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
-            ->when($request->filled('author'), fn($q) => $q->where('user_id', $request->author))
-            ->when($request->filled('search'), fn($q) => $q->search($request->search))
-            ->latest()
-            ->paginate(15)
-            ->withQueryString();
+        // 1. Filter by Status (Active vs Trashed)
+        if ($request->status === 'trashed') {
+            $query->onlyTrashed(); // نمایش پست‌های حذف شده
+        } else {
+            $query->whereNull('deleted_at'); // نمایش پست‌های فعال
+            if ($request->status) {
+                $query->where('status', $request->status);
+            }
+        }
 
-        $authors = User::whereHas('posts')->pluck('name', 'id');
+        // 2. Filter by Author
+        if ($request->filled('author')) {
+            $query->where('user_id', $request->author);
+        }
+
+        // 3. Search
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', "%{$request->search}%")
+                  ->orWhere('body', 'like', "%{$request->search}%");
+            });
+        }
+
+        $posts = $query->latest('deleted_at')
+                       ->paginate(12)
+                       ->withQueryString();
+
+        // برای استفاده در Dropdown نویسندگان
+        $authors = \App\Models\User::role(['Admin', 'Editor', 'Author'])
+            ->pluck('name', 'id');
 
         return view('admin.posts.index', compact('posts', 'authors'));
     }
 
     /**
-     * Show the form for editing a post.
+     * Show the form for editing the specified resource.
      */
     public function edit(Post $post)
     {
         Gate::authorize('update', $post);
+        $categories = \App\Models\Category::all(['id', 'name']);
+        $tags = \App\Models\Tag::all(['id', 'name']);
 
-        $categories = Category::all(['id', 'name']);
-        $tags = Tag::all(['id', 'name']);
-
-        return view('admin.posts.edit', compact('post', 'categories', 'tags'));
+        return view('posts.edit', compact('post', 'categories', 'tags')); // Assume using user-side edit view or create admin edit
     }
 
     /**
-     * Update a post (admin version).
+     * Update the specified resource in storage.
      */
     public function update(PostRequest $request, Post $post, ImageService $imageService)
     {
         Gate::authorize('update', $post);
-
-        $data = $request->getPostData();
-
-        DB::transaction(function () use ($data, $request, $post, $imageService) {
-            // Track the old author for logging
-            $oldAuthorId = $post->user_id;
-            
-            $post->update($data);
-
-            // Sync categories and tags
-            $post->categories()->sync($request->categories ?? []);
-            $post->tags()->sync($request->tags ?? []);
-
-            // Handle image operations
-            if ($request->boolean('delete_image') && $post->featured_image) {
-                $imageService->deleteImage($post->featured_image);
-                $post->update(['featured_image' => null]);
-            }
-
-            if ($request->hasFile('featured_image')) {
-                if ($post->featured_image) {
-                    $imageService->deleteImage($post->featured_image);
-                }
-                $imagePath = $imageService->storeImage(
-                    $request->file('featured_image'),
-                    'posts',
-                    config('image.sizes', [])
-                );
-                $post->update(['featured_image' => $imagePath]);
-            }
-
-            Log::info('Admin updated post', [
-                'post_id' => $post->id,
-                'old_author_id' => $oldAuthorId,
-                'new_author_id' => $post->user_id,
-                'changed_by' => auth()->id(),
-                'title' => $post->title,
-            ]);
-        });
-
-        return redirect()->route('admin.posts.index')
-            ->with('success', 'Post updated successfully!');
+        // Logika e update mitavanad hamantor ke PostController bashad
+        // Baraye chalesh-e zaman estefade az PostController logic ham raa ejra mikonim:
+        return app(\App\Http\Controllers\PostController::class)->update($request, $post, $imageService);
     }
 
     /**
-     * Destroy a post (admin version).
+     * Remove the specified resource from storage.
      */
     public function destroy(Post $post, ImageService $imageService)
     {
         Gate::authorize('delete', $post);
+        
+        // استفاده از متد اصلی PostController برای حذف نرم
+        return app(\App\Http\Controllers\PostController::class)->destroy($post, $imageService);
+    }
+
+    /**
+     * Restore the specified resource from trash.
+     */
+    public function restore($id)
+    {
+        $post = Post::onlyTrashed()->findOrFail($id);
+
+        Gate::authorize('restore', $post);
+
+        $post->restore();
+
+        Log::info('Post restored from trash', [
+            'post_id' => $post->id,
+            'restored_by' => Auth::id(),
+        ]);
+
+        return redirect()->back()->with('success', 'Post restored successfully.');
+    }
+
+    /**
+     * Force Delete (Permanently remove) the specified resource from storage.
+     */
+    public function forceDelete($id, ImageService $imageService)
+    {
+        $post = Post::onlyTrashed()->findOrFail($id);
+
+        Gate::authorize('forceDelete', $post);
 
         DB::transaction(function () use ($post, $imageService) {
+            // Detach relationships
             $post->categories()->detach();
             $post->tags()->detach();
 
+            // Delete featured image from disk permanently
             if ($post->featured_image) {
                 $imageService->deleteImage($post->featured_image);
             }
 
-            $post->delete();
+            // Permanently delete from database
+            $post->forceDelete();
 
-            Log::info('Admin deleted post', [
+            Log::warning('Post permanently deleted', [
                 'post_id' => $post->id,
-                'title' => $post->title,
-                'deleted_by' => auth()->id(),
+                'deleted_by' => Auth::id(),
             ]);
         });
 
-        return redirect()->route('admin.posts.index')
-            ->with('success', 'Post deleted successfully!');
+        return redirect()->back()->with('success', 'Post permanently deleted.');
     }
 
     /**
-     * Bulk actions for posts.
+     * Perform bulk actions on posts.
      */
     public function bulkAction(Request $request)
     {
-        Gate::authorize('manage posts');
-
-        $request->validate([
-            'action' => 'required|in:publish,draft,delete',
-            'ids' => 'required|array|min:1',
-            'ids.*' => 'integer|exists:posts,id',
-        ]);
-
         $action = $request->input('action');
         $ids = $request->input('ids', []);
 
@@ -144,45 +149,22 @@ class PostAdminController extends Controller
             return redirect()->back()->with('error', 'No posts selected.');
         }
 
-        // Ensure we only work with posts the user has permission to modify
-        $posts = Post::whereIn('id', $ids)->get();
-        foreach ($posts as $post) {
-            Gate::authorize('update', $post); // or appropriate permission check
-        }
-
         switch ($action) {
-            case 'publish':
-                Post::whereIn('id', $ids)->update([
-                    'status'  => 'published',
-                    'published_at' => now(),
-                ]);
-                $message = count($ids) . ' posts published.';
-                break;
-            
-            case 'draft':
-                Post::whereIn('id', $ids)->update([
-                    'status' => 'draft',
-                    'published_at' => null,
-                ]);
-                $message = count($ids) . ' posts moved to draft.';
-                break;
-
             case 'delete':
                 Post::whereIn('id', $ids)->delete();
-                $message = count($ids) . ' posts deleted';
-                break;
+                return redirect()->back()->with('success', 'Selected posts moved to trash.');
+            
+            case 'publish':
+                // You can implement bulk publish logic here
+                Post::whereIn('id', $ids)->update(['status' => 'published', 'published_at' => now()]);
+                return redirect()->back()->with('success', 'Selected posts published.');
+            
+            case 'draft':
+                Post::whereIn('id', $ids)->update(['status' => 'draft']);
+                return redirect()->back()->with('success', 'Selected posts moved to draft.');
             
             default:
-                return redirect()->back()->with('error', 'Invalid action selected.');
+                return redirect()->back()->with('error', 'Unknown action.');
         }
-
-        Log::info('Admin bulk action on posts', [
-            'action' => $action,
-            'count' => count($ids),
-            'user_id' => auth()->id(),
-            'post_ids' => $ids,
-        ]);
-
-        return redirect()->route('admin.posts.index')->with('success', $message);
     }
 }
