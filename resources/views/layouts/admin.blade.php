@@ -44,11 +44,6 @@
             
             <div class="collapse navbar-collapse" id="adminNavbar">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home') }}" target="_blank">
-                            <i class="bi bi-box-arrow-up-right"></i> View Site
-                        </a>
-                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                             <img src="{{ auth()->user()->avatar_url }}" 

@@ -89,9 +89,14 @@ Route::middleware(['auth', 'role:Admin'])
         Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         // User Management
-        Route::resource('users', UserAdminController::class)
-            ->except(['create', 'store'])
-            ->middleware('can:manage users');
+        Route::get('users', [UserAdminController::class, 'index'])->name('users.index');
+        Route::get('users/{user}', [UserAdminController::class, 'show'])->name('users.show');
+        Route::put('users/{user}/role', [UserAdminController::class, 'updateRole'])->name('users.updateRole');
+        Route::post('users/{user}/ban', [UserAdminController::class, 'ban'])->name('users.ban');
+        Route::post('users/{user}/unban', [UserAdminController::class, 'unban'])->name('users.unban');
+        Route::delete('users/{user}', [UserAdminController::class, 'destroy'])->name('users.destroy');
+        Route::post('users/{id}/restore', [UserAdminController::class, 'restore'])->name('users.restore');
+        Route::delete('users/{id}/force-delete', [UserAdminController::class, 'forceDelete'])->name('users.forceDelete');
 
         // Category Management
         Route::resource('categories', CategoryAdminController::class)

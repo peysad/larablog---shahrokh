@@ -10,10 +10,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
     /**
      * The attributes that are mass assignable.
      *
@@ -27,6 +28,9 @@ class User extends Authenticatable
         'bio',
         'social_links',
         'email_verified_at',
+        'banned_at',
+        'banned_by',
+        'ban_reason',
     ];
 
     /**
@@ -48,6 +52,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'social_links' => 'array',
+        'banned_at' => 'datetime',
     ];
 
     /**
@@ -105,6 +110,30 @@ class User extends Authenticatable
         return $this->hasRole('Author');
     }
 
+    // Ban System
+    public function isBanned(): bool
+    {
+        return $this->banned_at !== null;
+    }
+
+    /**
+     * Get the user (admin) who banned this user.
+     */
+    public function bannedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'banned_by');
+    }
+
+    public function scopeNotBanned($query)
+    {
+        return $query->whereNull('banned_at');
+    }
+
+    public function scopeBanned($query)
+    {
+        return $query->whereNotNull('banned_at');
+    }
+
     /**
     * Get unread notifications count.
     */
@@ -125,5 +154,36 @@ class User extends Authenticatable
     public function getPublishedPostsCountAttribute(): int
     {
         return $this->posts()->published()->count();
+    }
+
+    // Activity
+    public function getLastActivityAttribute(): ?string
+    {
+        $lastLogin = $this->last_login_at;
+        $lastPost = $this->posts()->latest()->first()?->created_at;
+        
+        if (!$lastLogin && !$lastPost) return null;
+        
+        return $lastLogin && (!$lastPost || $lastLogin->gt($lastPost)) 
+            ? $lastLogin->diffForHumans() 
+            : $lastPost->diffForHumans();
+    }
+
+    // Boot
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($user) {
+            if ($user->isForceDeleting()) {
+                $user->posts()->forceDelete();
+            } else {
+                $user->posts()->delete();
+            }
+        });
+
+        static::restoring(function ($user) {
+            $user->posts()->onlyTrashed()->restore();
+        });
     }
 }

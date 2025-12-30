@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
-
+use App\Models\User;
 class LoginController extends Controller
 {
     /**
@@ -33,6 +33,24 @@ class LoginController extends Controller
 
             // Regenerate CSRF token for security
             $request->session()->regenerateToken();
+
+            $user = Auth::user();
+            
+            // Check if banned
+            if ($user->isBanned()) {
+                Auth::logout();
+                
+                // Invalidate session after logout
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                
+                return redirect()->back()
+                    ->withInput($request->only('email'))
+                    ->with('error', 'Your account has been banned. Contact administrator.');
+            }
+
+            // Update last login
+            $user->update(['last_login_at' => now()]);
 
             return redirect()->intended(route('dashboard'))
                 ->with('success', 'You have been successfully logged in.');

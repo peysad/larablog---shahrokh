@@ -177,6 +177,22 @@
     color: color-mix(in srgb, var(--stat-color) 80%, black);
 }
 
+/* User Management Styles */
+.user-management .form-control:focus,
+.user-management .form-select:focus {
+    border-color: var(--admin-primary);
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+.user-management .table th {
+    border-bottom: 2px solid var(--admin-border);
+    font-weight: 600;
+}
+
+.user-management .table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+}
 /* Responsive Design */
 @media (max-width: 768px) {
     .stats-grid {

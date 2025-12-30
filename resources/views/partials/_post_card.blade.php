@@ -22,7 +22,7 @@
                 <span class="fw-bold text-dark" style="margin-left: 3px;">Written by : {{ $post->author->name }}</span>
             </span>
             
-            @if($post->updated_by && $post->updated_by !== $post->user_id)
+            @if($post->updater && $post->updater->id !== $post->user_id)
             <span class="d-flex align-items-center">
                 <!-- Optional: You could add avatar here too if needed -->
                 <i class="bi bi-pencil-square ms-1"></i>

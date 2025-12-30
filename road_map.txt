@@ -1,145 +1,157 @@
-📦 laravel-project/
-├── 📄 .editorconfig
-├── 📄 .env
-├── 📄 .env.example
-├── 📄 .gitattributes
-├── 📄 .gitignore
-├── 📄 README.md
-├── 📄 artisan
-├── 📄 composer.json
-├── 📄 composer.lock
-├── 📄 package-lock.json
-├── 📄 package.json
-├── 📄 phpunit.xml
-├── 📄 vite.config.js
-├── 📁 app/
-│   ├── 📁 Console/
-│   │   └── 📁 Commands/
-│   │       └── 📄 CreateStorageDirectories.php
-│   ├── 📁 Events/
-│   │   └── 📄 CommentPosted.php
-│   ├── 📁 Http/
-│   │   ├── 📁 Controllers/
-│   │   │   ├── 📄 AuthorController.php
-│   │   │   ├── 📄 CommentController.php
-│   │   │   ├── 📄 Controller.php
-│   │   │   ├── 📄 DashboardController.php
-│   │   │   ├── 📄 PostController.php
-│   │   │   ├── 📁 Admin/
-│   │   │   │   ├── 📄 CategoryAdminController.php
-│   │   │   │   ├── 📄 CommentAdminController.php
-│   │   │   │   ├── 📄 DashboardController.php
-│   │   │   │   ├── 📄 PostAdminController.php
-│   │   │   │   ├── 📄 TagAdminController.php
-│   │   │   │   └── 📄 UserAdminController.php
-│   │   │   └── 📁 Auth/
-│   │   │       ├── 📄 ForgotPasswordController.php
-│   │   │       ├── 📄 LoginController.php
-│   │   │       ├── 📄 RegisterController.php
-│   │   │       └── 📄 ResetPasswordController.php
-│   │   ├── 📁 Middleware/
-│   │   │   └── 📄 CheckRole.php
-│   │   └── 📁 Requests/
-│   │       ├── 📄 CategoryRequest.php
-│   │       ├── 📄 CommentRequest.php
-│   │       ├── 📄 PostRequest.php
-│   │       ├── 📄 ProfileRequest.php
-|   |       ├── 📄 DashboardProfileRequest.php
-│   │       ├── 📄 TagRequest.php
-│   │       └── 📁 Auth/
-│   │           ├── 📄 LoginRequest.php
-│   │           └── 📄 RegisterRequest.php
-│   ├── 📁 Listeners/
-│   │   └── 📄 SendCommentNotification.php
-│   ├── 📁 Logging/
-│   │   └── 📄 ImageProcessorFormatter.php
-│   ├── 📁 Models/
-│   │   ├── 📄 Category.php
-│   │   ├── 📄 Comment.php
-│   │   ├── 📄 Post.php
-│   │   ├── 📄 Tag.php
-│   │   └── 📄 User.php
-│   ├── 📁 Notifications/
-│   │   └── 📄 NewCommentNotification.php
-│   ├── 📁 Policies/
-│   │   ├── 📄 CategoryPolicy.php
-│   │   ├── 📄 CommentPolicy.php
-│   │   ├── 📄 PostPolicy.php
-│   │   ├── 📄 TagPolicy.php
-│   │   └── 📄 UserPolicy.php
-│   ├── 📁 Providers/
-│   │   ├── 📄 AppServiceProvider.php
-│   │   ├── 📄 AuthServiceProvider.php
-│   │   └── 📄 EventServiceProvider.php
-│   └── 📁 Services/
-│       └── 📄 ImageService.php
-├── 📁 database/
-│   └── 📁 migrations/
-│       ├── 📄 0001_01_01_000000_create_users_table.php
-│       ├── 📄 0001_01_01_000001_create_cache_table.php
-│       ├── 📄 0001_01_01_000002_create_jobs_table.php
-│       ├── 📄 2025_12_22_172347_create_permission_tables.php
-│       ├── 📄 2025_12_22_193055_create_posts_table.php
-│       ├── 📄 2025_12_22_193059_create_categories_table.php
-│       ├── 📄 2025_12_22_193102_create_tags_table.php
-│       ├── 📄 2025_12_22_193608_create_category_post_table.php
-│       ├── 📄 2025_12_22_193616_create_post_tag_table.php
-│       ├── 📄 2025_12_23_185337_add_updated_by_to_posts_table.php
-│       ├── 📄 2025_12_26_190609_create_comments_table.php
-│       └── 📄 2025_12_26_220851_add_allow_comments_to_posts_table.php
-├── 📁 resources/
-│   ├── 📁 css/
-│   │   ├── 📄 admin.css
-│   │   ├── 📄 app.css
-│   │   ├── 📄 post.css
-│   │   └── 📄 sidebar.css
-│   ├── 📁 js/
-│   │   ├── 📄 admin.js
-│   │   ├── 📄 app.js
-│   │   └── 📄 bootstrap.js
-│   └── 📁 views/
-│       ├── 📄 dashboard.blade.php
-│       ├── 📁 admin/
-│       │   ├── 📄 dashboard.blade.php
-│       │   ├── 📁 categories/
-│       │   │   ├── 📄 create.blade.php
-│       │   │   ├── 📄 edit.blade.php
-│       │   │   └── 📄 index.blade.php
-│       │   ├── 📁 comments/
-│       │   │   ├── 📄 index.blade.php
-│       │   │   └── 📄 pending.blade.php
-│       │   ├── 📁 partials/
-│       │   │   └── 📄 _sidebar.blade.php
-│       │   ├── 📁 posts/
-│       │   │   └── 📄 index.blade.php
-│       │   └── 📁 tags/
-│       │       ├── 📄 create.blade.php
-│       │       ├── 📄 edit.blade.php
-│       │       └── 📄 index.blade.php
-│       ├── 📁 auth/
-│       │   ├── 📄 login.blade.php
-│       │   ├── 📄 register.blade.php
-│       │   └── 📁 passwords/
-│       │       ├── 📄 email.blade.php
-│       │       └── 📄 reset.blade.php
-│       ├── 📁 authors/
-│       │   ├── 📄 edit.blade.php
-│       │   └── 📄 show.blade.php
-│       ├── 📁 layouts/
-│       │   ├── 📄 admin.blade.php
-│       │   └── 📄 app.blade.php
-│       ├── 📁 partials/
-│       │   ├── 📄 _comment_form.blade.php
-│       │   ├── 📄 _comments.blade.php
-│       │   ├── 📄 _post_card.blade.php
-│       │   └── 📄 _sidebar.blade.php
-│       └── 📁 posts/
-│           ├── 📄 create.blade.php
-│           ├── 📄 edit.blade.php
-│           ├── 📄 index.blade.php
-│           ├── 📄 show.blade.php
-│           └── 📁 partials/
-│               └── 📄 form.blade.php
-└── 📁 routes/
-    ├── 📄 console.php
-    └── 📄 web.php
+project-root/
+├── .editorconfig
+├── .env
+├── .env.example
+├── .gitattributes
+├── .gitignore
+├── README.md
+├── artisan
+├── composer.json
+├── composer.lock
+├── package-lock.json
+├── package.json
+├── phpunit.xml
+├── t.html
+├── vite.config.js
+├── app/
+│   ├── Console/
+│   │   └── Commands/
+│   │       └── CreateStorageDirectories.php
+│   ├── Events/
+│   │   └── CommentPosted.php
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Admin/
+│   │   │   │   ├── CategoryAdminController.php
+│   │   │   │   ├── CommentAdminController.php
+│   │   │   │   ├── DashboardController.php
+│   │   │   │   ├── PostAdminController.php
+│   │   │   │   ├── TagAdminController.php
+│   │   │   │   └── UserAdminController.php
+│   │   │   ├── Auth/
+│   │   │   │   ├── ForgotPasswordController.php
+│   │   │   │   ├── LoginController.php
+│   │   │   │   ├── RegisterController.php
+│   │   │   │   └── ResetPasswordController.php
+│   │   │   ├── AuthorController.php
+│   │   │   ├── CommentController.php
+│   │   │   ├── Controller.php
+│   │   │   ├── DashboardController.php
+│   │   │   └── PostController.php
+│   │   ├── Middleware/
+│   │   │   ├── CheckBannedUser.php
+│   │   │   └── CheckRole.php
+│   │   └── Requests/
+│   │       ├── Auth/
+│   │       │   ├── LoginRequest.php
+│   │       │   └── RegisterRequest.php
+│   │       ├── AdminUserBanRequest.php
+│   │       ├── AdminUserRoleRequest.php
+│   │       ├── CategoryRequest.php
+│   │       ├── CommentRequest.php
+│   │       ├── DashboardProfileRequest.php
+│   │       ├── PostRequest.php
+│   │       ├── ProfileRequest.php
+│   │       └── TagRequest.php
+│   ├── Listeners/
+│   │   └── SendCommentNotification.php
+│   ├── Logging/
+│   │   └── ImageProcessorFormatter.php
+│   ├── Models/
+│   │   ├── Category.php
+│   │   ├── Comment.php
+│   │   ├── Post.php
+│   │   ├── Tag.php
+│   │   └── User.php
+│   ├── Notifications/
+│   │   └── NewCommentNotification.php
+│   ├── Policies/
+│   │   ├── CategoryPolicy.php
+│   │   ├── CommentPolicy.php
+│   │   ├── PostPolicy.php
+│   │   ├── TagPolicy.php
+│   │   └── UserPolicy.php
+│   ├── Providers/
+│   │   ├── AppServiceProvider.php
+│   │   ├── AuthServiceProvider.php
+│   │   └── EventServiceProvider.php
+│   └── Services/
+│       └── ImageService.php
+├── database/
+│   └── migrations/
+│       ├── 0001_01_01_000000_create_users_table.php
+│       ├── 0001_01_01_000001_create_cache_table.php
+│       ├── 0001_01_01_000002_create_jobs_table.php
+│       ├── 2025_12_22_172347_create_permission_tables.php
+│       ├── 2025_12_22_193055_create_posts_table.php
+│       ├── 2025_12_22_193059_create_categories_table.php
+│       ├── 2025_12_22_193102_create_tags_table.php
+│       ├── 2025_12_22_193608_create_category_post_table.php
+│       ├── 2025_12_22_193616_create_post_tag_table.php
+│       ├── 2025_12_23_185337_add_updated_by_to_posts_table.php
+│       ├── 2025_12_26_190609_create_comments_table.php
+│       ├── 2025_12_26_220851_add_allow_comments_to_posts_table.php
+│       ├── 2025_12_29_214913_add_ban_fields_to_users_table.php
+│       └── 2025_12_29_234333_create_personal_access_tokens_table.php
+├── resources/
+│   ├── css/
+│   │   ├── admin.css
+│   │   ├── app.css
+│   │   ├── author.css
+│   │   ├── dashboard.css
+│   │   ├── post.css
+│   │   └── sidebar.css
+│   ├── js/
+│   │   ├── admin.js
+│   │   ├── app.js
+│   │   └── bootstrap.js
+│   └── views/
+│       ├── admin/
+│       │   ├── categories/
+│       │   │   ├── create.blade.php
+│       │   │   ├── edit.blade.php
+│       │   │   └── index.blade.php
+│       │   ├── comments/
+│       │   │   ├── index.blade.php
+│       │   │   └── pending.blade.php
+│       │   ├── dashboard.blade.php
+│       │   ├── partials/
+│       │   │   └── _sidebar.blade.php
+│       │   ├── posts/
+│       │   │   └── index.blade.php
+│       │   ├── tags/
+│       │   │   ├── create.blade.php
+│       │   │   ├── edit.blade.php
+│       │   │   └── index.blade.php
+│       │   └── users/
+│       │       ├── index.blade.php
+│       │       └── show.blade.php
+│       ├── auth/
+│       │   ├── login.blade.php
+│       │   ├── register.blade.php
+│       │   └── passwords/
+│       │       ├── email.blade.php
+│       │       └── reset.blade.php
+│       ├── authors/
+│       │   ├── edit.blade.php
+│       │   ├── index.blade.php
+│       │   └── show.blade.php
+│       ├── dashboard.blade.php
+│       ├── layouts/
+│       │   ├── admin.blade.php
+│       │   └── app.blade.php
+│       ├── partials/
+│       │   ├── _comment_form.blade.php
+│       │   ├── _comments.blade.php
+│       │   ├── _post_card.blade.php
+│       │   └── _sidebar.blade.php
+│       └── posts/
+│           ├── create.blade.php
+│           ├── edit.blade.php
+│           ├── index.blade.php
+│           ├── show.blade.php
+│           └── partials/
+│               └── form.blade.php
+└── routes/
+    ├── console.php
+    └── web.php
