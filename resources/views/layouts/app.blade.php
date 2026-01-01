@@ -82,13 +82,16 @@
 
                 <ul class="navbar-nav">
                     @guest
+                        {{-- FIXED: Added Active State Logic for Login --}}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">
+                            <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="{{ route('login') }}">
                                 <i class="bi bi-box-arrow-in-right"></i> Login
                             </a>
                         </li>
+                        
+                        {{-- FIXED: Added Active State Logic for Register --}}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('register') }}">
+                            <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">
                                 <i class="bi bi-person-plus"></i> Register
                             </a>
                         </li>
@@ -217,8 +220,8 @@
     <footer class="text-center py-4 mt-5 shadow-sm" style="background-color: var(--sidebar); color: white;">
         <div class="container">
             <p class="mb-0">
-                <i class="bi bi-c-circle me-1"></i> 2025 LaraBlog. All rights reserved. 
-                Built with <i class="bi bi-heart-fill text-danger mx-1"></i> and Laravel
+                <i class="bi bi-c-circle me-1"></i> 2026 LaraBlog. All rights reserved. 
+                Built with Laravel
             </p>
         </div>
     </footer>

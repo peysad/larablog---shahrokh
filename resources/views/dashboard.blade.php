@@ -178,12 +178,6 @@
                     @enderror
                 </div>
 
-                <div class="password-info">
-                    <i class="bi bi-info-circle"></i>
-                    To change your password, use the 
-                    <a href="{{ route('password.request') }}">password reset</a> feature.
-                </div>
-
                 <div class="form-actions">
                     <button type="submit" class="btn-submit">
                         <i class="bi bi-save"></i>

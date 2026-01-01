@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DashboardProfileRequest;
 use App\Services\ImageService;
-use Illuminate\Support\Facades\{DB, Log, Storage};
+use Illuminate\Support\Facades\{DB, Log, Storage, Password};
 
 class DashboardController extends Controller
 {
