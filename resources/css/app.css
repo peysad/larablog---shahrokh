@@ -385,3 +385,114 @@ footer {
 .form-control {
     will-change: transform;
 }
+
+ /* Container for Floating Notifications */
+.flash-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 380px;
+    pointer-events: none; /* Clicks pass through empty spaces */
+}
+
+/* The Glassmorphism Card */
+.flash-card {
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.95); /* Highly frosted glass */
+    backdrop-filter: blur(12px); /* Blur background behind */
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); /* Deep shadow for depth */
+    border-radius: 16px;
+    overflow: hidden;
+                
+    /* Soft Entry Animation */
+    animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: bottom right;
+}
+
+@keyframes slideInUp {
+    0% {
+        transform: translateY(50px) scale(0.9);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Inner Content Layout */
+.flash-inner {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 14px 20px;
+}
+
+/* Icon Styling */
+.flash-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Message Text Styling */
+.flash-text {
+    margin: 0 12px;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+/* Close Button */
+.flash-close {
+    background: transparent;
+    border: none;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    color: #333;
+    padding: 4px;
+    margin-right: -4px;
+    margin-top: -4px;
+    border-radius: 50%;
+}
+.flash-close:hover {
+    opacity: 1;
+    background: rgba(0,0,0,0.05);
+}
+
+/* Type Variants */
+.flash-success .flash-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+.flash-success .flash-text {
+    color: #065f46;
+}
+
+.flash-error .flash-icon {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+}
+.flash-error .flash-text {
+    color: #991b1b;
+}
+
+.flash-info .flash-icon {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+}
+.flash-info .flash-text {
+    color: #1e40af;
+}
