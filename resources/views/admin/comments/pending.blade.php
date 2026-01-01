@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Pending Comments')
+
 @push('styles')
     <style>
         .card {
@@ -9,6 +10,7 @@
         }
     </style>
 @endpush
+
 @section('content')
 <div class="row">
     <div class="col-12">
@@ -71,18 +73,25 @@
                                             {{ $comment->created_at->diffForHumans() }}
                                         </td>
                                         <td class="text-center">
-                                            <form action="{{ route('admin.comments.approve', $comment) }}" 
-                                                  method="POST" class="d-inline">
-                                                @csrf
-                                                <button type="button" class="btn btn-sm btn-success" 
-                                                        onclick="confirmApprove(this)">
+                                            <div class="btn-group" role="group">
+                                                <!-- Approve Button (Modal Trigger) -->
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-success" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#approveModal"
+                                                        onclick="setupAction('{{ route('admin.comments.approve', $comment) }}')">
                                                     <i class="bi bi-check-circle"></i> Approve
                                                 </button>
-                                            </form>
-                                            <button type="button" class="btn btn-sm btn-danger" 
-                                                    onclick="confirmReject({{ $comment->id }})">
-                                                <i class="bi bi-x-circle"></i> Reject
-                                            </button>
+
+                                                <!-- Reject Button (Modal Trigger) -->
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-danger" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#rejectModal"
+                                                        onclick="setupAction('{{ route('admin.comments.reject', $comment) }}')">
+                                                    <i class="bi bi-x-circle"></i> Reject
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -104,24 +113,84 @@
     </div>
 </div>
 
+<!-- Approve Modal (Green Style) -->
+<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="approveModalLabel">
+                    <i class="bi bi-check-circle"></i> Approve Comment
+                </h5>
+                <button type="button" class="btn-close btn-close-white" style="margin-right: 0;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to approve this comment? It will be visible to the public.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="executeAction()">Approve</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal (Red Style - Force Delete Type) -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="rejectModalLabel">
+                    <i class="bi bi-x-circle"></i> Reject Comment
+                </h5>
+                <button type="button" class="btn-close" style="margin-right: 0;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger"><strong>Warning:</strong> Are you sure you want to reject this comment? It will be deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="executeAction()">Reject</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
 @push('scripts')
 <script>
-function confirmApprove(button) {
-    if (confirm('Approve this comment?')) {
-        button.form.submit();
-    }
+let currentActionUrl = '';
+
+// Set the action URL before opening the modal
+function setupAction(url) {
+    currentActionUrl = url;
 }
 
-function confirmReject(commentId) {
-    if (confirm('Reject (delete) this comment?')) {
-        fetch(`/admin/comments/${commentId}/reject`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            },
-        }).then(() => location.reload());
+// Execute the action using Fetch (AJAX)
+function executeAction() {
+    if (!currentActionUrl) {
+        console.error('No action URL set.');
+        return;
     }
+
+    fetch(currentActionUrl, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Reload page on success
+            window.location.reload();
+        } else {
+            console.error('Action failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 </script>
 @endpush
-@endsection

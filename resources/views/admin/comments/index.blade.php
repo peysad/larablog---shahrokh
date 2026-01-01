@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'All Comments')
+
 @push('styles')
     <style>
         .card {
@@ -74,27 +75,77 @@
                                         </td>
                                         <td>
                                             @if($comment->approved)
-                                                <span class="badge bg-success">Approved</span>
+                                                    <span class="badge bg-success">Approved</span>
                                             @else
-                                                <span class="badge bg-warning text-dark">Pending</span>
+                                                    <span class="badge bg-warning text-dark">Pending</span>
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            @if(!$comment->approved)
-                                                <form action="{{ route('admin.comments.approve', $comment) }}" 
-                                                      method="POST" class="d-inline">
-                                                    @csrf
-                                                    <button type="button" class="btn btn-sm btn-success" 
-                                                            onclick="confirmApprove(this)">
+                                            <div class="btn-group" role="group">
+                                                @if(!$comment->approved)
+                                                    <!-- Approve Button (Modal Trigger) -->
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-success" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#approveModal{{ $comment->id }}"
+                                                            title="Approve Comment">
                                                         <i class="bi bi-check-circle"></i> Approve
                                                     </button>
-                                                </form>
+                                                @endif
+                                                
+                                                <!-- Reject/Delete Button (Modal Trigger) -->
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-danger" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#rejectModal{{ $comment->id }}"
+                                                        title="Reject Comment">
+                                                    <i class="bi bi-trash"></i> Delete
+                                                </button>
+                                            </div>
+
+                                            <!-- Approve Modal (Green Style) -->
+                                            @if(!$comment->approved)
+                                                <div class="modal fade" id="approveModal{{ $comment->id }}" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <form action="{{ route('admin.comments.approve', $comment) }}" method="POST">
+                                                            @csrf
+                                                            <div class="modal-content">
+                                                                <div class="modal-header bg-success text-white">
+                                                                    <h5 class="modal-title">Approve Comment</h5>
+                                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <p>Are you sure you want to approve this comment? It will be visible to the public.</p>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                    <button type="submit" class="btn btn-success">Approve</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             @endif
-                                            
-                                            <button type="button" class="btn btn-sm btn-danger" 
-                                                    onclick="confirmReject({{ $comment->id }})">
-                                                <i class="bi bi-trash"></i> Delete
-                                            </button>
+
+                                            <!-- Reject Modal (Red Style - Force Delete Type) -->
+                                            <div class="modal fade" id="rejectModal{{ $comment->id }}" tabindex="-1">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <!-- Note: Reject uses JS fetch, not a standard form submit, but styling is applied to the modal -->
+                                                        <div class="modal-header bg-danger text-white">
+                                                            <h5 class="modal-title">Reject Comment</h5>
+                                                            <button type="button" class="btn-close btn-close-white" style="margin-right: 0;" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p class="text-danger"><strong>Warning:</strong> Are you sure you want to reject this comment? It will be deleted.</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="button" class="btn btn-danger" onclick="submitRejectForm({{ $comment->id }})">Reject</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -115,25 +166,38 @@
         {{ $comments->links() }}
     </div>
 </div>
+@endsection
 
 @push('scripts')
 <script>
-function confirmApprove(button) {
-    if (confirm('Approve this comment?')) {
-        button.form.submit();
+// Function to handle Reject (Delete) via AJAX
+function submitRejectForm(commentId) {
+    if (!commentId) {
+        console.error('Comment ID is missing.');
+        return;
     }
-}
 
-function confirmReject(commentId) {
-    if (confirm('Delete this comment?')) {
-        fetch(`/admin/comments/${commentId}/reject`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            },
-        }).then(() => location.reload());
-    }
+    fetch(`/admin/comments/${commentId}/reject`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Reload page on success
+            window.location.reload();
+        } else {
+            console.error('Action failed');
+            alert('Failed to reject comment.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred.');
+    });
 }
 </script>
 @endpush
-@endsection

@@ -269,7 +269,7 @@
                                                 <div class="modal-content">
                                                     <div class="modal-header bg-danger text-white">
                                                         <h5 class="modal-title">Permanent Delete</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        <button type="button" class="btn-close" style="margin-right: 0;" data-bs-dismiss="modal"></button>
                                                     </div>
                                                     <div class="modal-body">
                                                         <p class="text-danger"><strong>Warning:</strong> This will permanently delete <strong>{{ $user->name }}</strong> and all data. This action cannot be undone.</p>

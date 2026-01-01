@@ -1,14 +1,16 @@
 @extends('layouts.admin')
 
 @section('title', 'Manage Tags')
+
 @push('styles')
-<style>
-    .card {
-        height: 60vh;
-        overflow-y: scroll;
-    }
-</style>
+    <style>
+        .card {
+            height: 60vh;
+            overflow-y: scroll;
+        }
+    </style>
 @endpush
+
 @section('content')
 <div class="row">
     <div class="col-12">
@@ -61,24 +63,47 @@
                                             {{ $tag->created_at->format('Y-m-d') }}
                                         </td>
                                         <td class="text-end">
-                                            @can('update', $tag)
-                                                <a href="{{ route('admin.tags.edit', $tag) }}" 
-                                                   class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-pencil"></i> Edit
-                                                </a>
-                                            @endcan
-                                            
-                                            @can('delete', $tag)
-                                                <form action="{{ route('admin.tags.destroy', $tag) }}" 
-                                                      method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                                            onclick="return confirm('Are you sure?')">
-                                                        <i class="bi bi-trash"></i> Delete
+                                            <div class="btn-group">
+                                                @can('update', $tag)
+                                                    <a href="{{ route('admin.tags.edit', $tag) }}" 
+                                                       class="btn btn-sm btn-outline-primary" title="Edit">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                @endcan
+                                                
+                                                @can('delete', $tag)
+                                                    <!-- Delete Button (Modal Trigger) -->
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-outline-danger" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#deleteModal{{ $tag->id }}"
+                                                            title="Delete">
+                                                        <i class="bi bi-trash"></i>
                                                     </button>
-                                                </form>
-                                            @endcan
+                                                @endcan
+                                            </div>
+
+                                            <!-- Delete Modal (Force Delete Style - Red Header) -->
+                                            <div class="modal fade" id="deleteModal{{ $tag->id }}" tabindex="-1">
+                                                <div class="modal-dialog">
+                                                    <form action="{{ route('admin.tags.destroy', $tag) }}" method="POST">
+                                                        @csrf @method('DELETE')
+                                                        <div class="modal-content">
+                                                            <div class="modal-header bg-danger text-white">
+                                                                <h5 class="modal-title">Permanent Delete</h5>
+                                                                <button type="button" class="btn-close" style="margin-right: 0;" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p class="text-danger"><strong>Warning:</strong> This will permanently delete <strong>{{ $tag->name }}</strong> and all associated posts. This action cannot be undone.</p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                <button type="submit" class="btn btn-danger">Delete Forever</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach

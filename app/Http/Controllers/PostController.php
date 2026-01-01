@@ -211,20 +211,22 @@ class PostController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * MODIFIED: Removed physical image deletion to prevent errors on Restore.
      */
     public function destroy(Post $post, ImageService $imageService)
     {
         Gate::authorize('delete', $post);
 
         DB::transaction(function () use ($post, $imageService) {
-            // Detach relationships
-            $post->categories()->detach();
-            $post->tags()->detach();
+            // We DO NOT detach categories/tags or delete image during Soft Delete.
+            // This allows the post to be restored with all its original data.
+            // $post->categories()->detach(); 
+            // $post->tags()->detach();
             
-            // Delete featured image if exists
-            if ($post->featured_image) {
-                $imageService->deleteImage($post->featured_image);
-            }
+            // // Delete featured image if exists
+            // if ($post->featured_image) {
+            //     $imageService->deleteImage($post->featured_image);
+            // }
 
             // Soft delete the post
             $post->delete();
@@ -232,12 +234,12 @@ class PostController extends Controller
             Log::info('Post deleted (soft delete)', [
                 'post_id' => $post->id,
                 'title' => $post->title,
-                'image_deleted' => !is_null($post->featured_image),
+                'image_kept' => !is_null($post->featured_image),
             ]);
         });
 
         return redirect()->route('posts.index')
-            ->with('success', 'Post deleted successfully!');
+            ->with('success', 'Post moved to trash.');
     }
 
     /**

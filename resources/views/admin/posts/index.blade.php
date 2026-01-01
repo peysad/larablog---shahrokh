@@ -9,7 +9,7 @@
         <a href="{{ route('posts.create') }}" class="btn btn-primary">
             <i class="bi bi-plus-circle"></i> Create New Post
         </a>
-        <button type="button" class="btn btn-outline-secondary" onclick="toggleBulkActions()">
+        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#bulkActionModal">
             <i class="bi bi-list-check"></i> Bulk Actions
         </button>
     </div>
@@ -21,7 +21,7 @@
             height: 65vh;
             overflow-y: scroll;
         }
-        /* استایل برای ردیف‌های حذف شده */
+        /* Style for Trashed Rows */
         tr.table-light td {
             text-decoration: line-through;
             color: #6c757d;
@@ -69,25 +69,10 @@
             </div>
         </form>
 
-        <!-- Bulk Actions Form -->
-        <form id="bulk-action-form" method="POST" action="{{ route('admin.posts.bulk-action') }}" class="d-none">
+        <!-- Hidden Form for Bulk Actions -->
+        <form id="bulk-action-form" method="POST" action="{{ route('admin.posts.bulk-action') }}" style="display: none;">
             @csrf
             <input type="hidden" name="action" id="bulk-action-value">
-            <div class="alert alert-warning mb-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span id="bulk-selected-count">0 items selected</span>
-                    <div>
-                        <button type="button" class="btn btn-sm btn-success" 
-                                onclick="setBulkAction('publish')">Publish</button>
-                        <button type="button" class="btn btn-sm btn-secondary" 
-                                onclick="setBulkAction('draft')">Move to Draft</button>
-                        <button type="button" class="btn btn-sm btn-danger" 
-                                onclick="setBulkAction('delete')">Delete</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" 
-                                onclick="toggleBulkActions()">Cancel</button>
-                    </div>
-                </div>
-            </div>
         </form>
 
         <!-- Posts Table -->
@@ -158,28 +143,49 @@
                             <td>{{ $post->created_at->format('Y-m-d') }}</td>
                             <td>
                                 @if($post->trashed())
-                                    <!-- Actions for Trashed Posts -->
-                                    <form action="{{ route('admin.posts.restore', $post->id) }}" 
-                                          method="POST" class="d-inline">
-                                        @csrf
-                                        <button type="submit" 
-                                                class="btn btn-sm btn-outline-success" 
-                                                title="Restore Post"
-                                                onclick="return confirm('Restore this post?')">
-                                            <i class="bi bi-arrow-counterclockwise"></i>
-                                        </button>
-                                    </form>
-                                    
-                                    <form action="{{ route('admin.posts.forceDelete', $post->id) }}" 
-                                          method="POST" class="d-inline">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" 
+                                    <!-- Actions for Trashed Posts (Matched with Users style) -->
+                                    <div class="btn-group" role="group">
+                                        <!-- Restore Button (Direct Form, No Confirm) -->
+                                        <form action="{{ route('admin.posts.restore', $post->id) }}" 
+                                              method="POST" class="d-inline">
+                                            @csrf
+                                            <button type="submit" 
+                                                    class="btn btn-sm btn-outline-success" 
+                                                    title="Restore Post">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                        </form>
+
+                                        <!-- Force Delete Button (Modal Trigger) -->
+                                        <button type="button" 
                                                 class="btn btn-sm btn-outline-danger" 
-                                                title="Delete Forever"
-                                                onclick="return confirm('Are you sure? This will permanently delete the post and cannot be undone!')">
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#forceDeleteModal{{ $post->id }}">
                                             <i class="bi bi-x-circle"></i>
                                         </button>
-                                    </form>
+                                    </div>
+
+                                    <!-- Force Delete Modal -->
+                                    <div class="modal fade" id="forceDeleteModal{{ $post->id }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <form action="{{ route('admin.posts.forceDelete', $post->id) }}" method="POST">
+                                                @csrf @method('DELETE')
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white">
+                                                        <h5 class="modal-title">Permanent Delete</h5>
+                                                        <button type="button" class="btn-close" style="margin-right: 0;" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p class="text-danger"><strong>Warning:</strong> This will permanently delete <strong>{{ $post->title }}</strong> and all data. This action cannot be undone.</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-danger">Delete Forever</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 @else
                                     <!-- Actions for Active Posts -->
                                     <div class="btn-group btn-group-sm">
@@ -191,15 +197,37 @@
                                            class="btn btn-outline-success" title="View" target="_blank">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <form action="{{ route('admin.posts.destroy', $post) }}" 
-                                              method="POST" class="d-inline" 
-                                              onsubmit="return confirm('Move this post to trash?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger" title="Delete">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
+                                        
+                                        <!-- Delete Button (Modal Trigger) -->
+                                        <button type="button" 
+                                                class="btn btn-outline-danger" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteModal{{ $post->id }}"
+                                                title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Delete Modal (Soft Delete) -->
+                                    <div class="modal fade" id="deleteModal{{ $post->id }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <form action="{{ route('admin.posts.destroy', $post) }}" method="POST">
+                                                @csrf @method('DELETE')
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-warning">
+                                                        <h5 class="modal-title">Move to Trash</h5>
+                                                        <button type="button" class="btn-close" style="margin-right: 0;" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>This will delete <strong>{{ $post->title }}</strong>. It can be restored later.</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-warning">Move to Trash</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
                                 @endif
                             </td>
@@ -222,19 +250,35 @@
         </div>
     </div>
 </div>
+
+<!-- Bulk Action Modal (Styled exactly like Force Delete Modal) -->
+<div class="modal fade" id="bulkActionModal" tabindex="-1" aria-labelledby="bulkActionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="bulkActionModalLabel">
+                    <i class="bi bi-list-check"></i> Bulk Action
+                </h5>
+                <button type="button" class="btn-close btn-close-white" style="margin-right: 0;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-light border">
+                    <p class="mb-0">Are you sure you want to perform a bulk action on selected items?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="executeBulkAction('publish')">Publish</button>
+                <button type="button" class="btn btn-secondary" onclick="executeBulkAction('draft')">Move to Draft</button>
+                <button type="button" class="btn btn-danger" onclick="executeBulkAction('delete')">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
-let bulkActionsVisible = false;
-
-function toggleBulkActions() {
-    bulkActionsVisible = !bulkActionsVisible;
-    const form = document.getElementById('bulk-action-form');
-    form.classList.toggle('d-none', !bulkActionsVisible);
-    updateBulkCount(); // Update count when toggling
-}
-
 function toggleSelectAll() {
     const selectAll = document.getElementById('select-all');
     const checkboxes = document.querySelectorAll('.post-checkbox');
@@ -243,17 +287,11 @@ function toggleSelectAll() {
         // Trigger change event to update bulk action form inputs
         cb.dispatchEvent(new Event('change', { bubbles: true }));
     });
-    updateBulkCount();
 }
 
 function updateBulkCount() {
     const checked = document.querySelectorAll('.post-checkbox:checked');
-    const countSpan = document.getElementById('bulk-selected-count');
     const selectAll = document.getElementById('select-all');
-    
-    if (countSpan) {
-        countSpan.textContent = checked.length + ' items selected';
-    }
     
     // Update select-all checkbox state
     const totalCheckboxes = document.querySelectorAll('.post-checkbox').length;
@@ -280,7 +318,8 @@ function updateBulkActionFormInputs(checkedCheckboxes) {
     });
 }
 
-function setBulkAction(action) {
+// Function to handle Bulk Action execution via Modal
+function executeBulkAction(action) {
     const checked = document.querySelectorAll('.post-checkbox:checked');
     
     if (checked.length === 0) {
@@ -289,11 +328,19 @@ function setBulkAction(action) {
     }
     
     document.getElementById('bulk-action-value').value = action;
-    const confirmMsg = `Are you sure you want to ${action} ${checked.length} selected post(s)?`;
     
-    if (confirm(confirmMsg)) {
-        document.getElementById('bulk-action-form').submit();
+    // Update hidden inputs for IDs
+    updateBulkActionFormInputs(checked);
+    
+    // Hide Modal
+    const modalEl = document.getElementById('bulkActionModal');
+    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+    if (modalInstance) {
+        modalInstance.hide();
     }
+    
+    // Submit hidden form
+    document.getElementById('bulk-action-form').submit();
 }
 
 // Initialize event listeners when DOM is loaded

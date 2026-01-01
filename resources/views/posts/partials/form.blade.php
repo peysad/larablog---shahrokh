@@ -56,7 +56,12 @@
                             <strong>Current Image:</strong> {{ basename($post->featured_image) }}
                         </p>
                         <p class="text-muted small mb-2">
-                            Size: {{ Storage::size('public/' . $post->featured_image) }} bytes
+                            <!-- Fix: Check existence before getting size to prevent crash -->
+                            @if(\Illuminate\Support\Facades\Storage::exists('public/' . $post->featured_image))
+                                Size: {{ Storage::size('public/' . $post->featured_image) }} bytes
+                            @else
+                                Size: (File not found on disk)
+                            @endif
                         </p>
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="delete_image" name="delete_image" 
@@ -175,11 +180,11 @@
     <div class="mb-4">
         <label for="status" class="form-label fw-bold">Status</label>
         <select id="status" name="status" class="form-select @error('status') is-invalid @enderror">
-            <option value="draft" {{ old('status', $post?->status ?? 'draft') === 'draft' ? 'selected' : '' }}>
+            <option value="draft" {{ old('status', $post?->status ?? 'draft') === 'draft' ? 'selected' : '' }}">
                 Draft
             </option>
             @can('publish posts')
-                <option value="published" {{ old('status', $post?->status) === 'published' ? 'selected' : '' }}>
+                <option value="published" {{ old('status', $post?->status) === 'published' ? 'selected' : '' }}">
                     Published
                 </option>
             @endcan

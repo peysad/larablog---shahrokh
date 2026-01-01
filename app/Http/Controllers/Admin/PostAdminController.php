@@ -21,9 +21,9 @@ class PostAdminController extends Controller
 
         // 1. Filter by Status (Active vs Trashed)
         if ($request->status === 'trashed') {
-            $query->onlyTrashed(); // نمایش پست‌های حذف شده
+            $query->onlyTrashed();
         } else {
-            $query->whereNull('deleted_at'); // نمایش پست‌های فعال
+            $query->whereNull('deleted_at');
             if ($request->status) {
                 $query->where('status', $request->status);
             }
@@ -46,7 +46,6 @@ class PostAdminController extends Controller
                        ->paginate(12)
                        ->withQueryString();
 
-        // برای استفاده در Dropdown نویسندگان
         $authors = \App\Models\User::role(['Admin', 'Editor', 'Author'])
             ->pluck('name', 'id');
 
@@ -83,7 +82,6 @@ class PostAdminController extends Controller
     {
         Gate::authorize('delete', $post);
         
-        // استفاده از متد اصلی PostController برای حذف نرم
         return app(\App\Http\Controllers\PostController::class)->destroy($post, $imageService);
     }
 
